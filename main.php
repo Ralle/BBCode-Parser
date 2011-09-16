@@ -4,12 +4,12 @@ error_reporting(-1);
 
 require_once __DIR__ . '/BBDatatypes.php';
 require_once __DIR__ . '/BBParser.class.php';
-require_once __DIR__ . '/BBDumper.class.php';
+// require_once __DIR__ . '/BBDumper.class.php';
 require_once __DIR__ . '/BBCode.class.php';
-require_once __DIR__ . '/Bold.class.php';
-require_once __DIR__ . '/NoTag.class.php';
-require_once __DIR__ . '/NoParse.class.php';
-require_once __DIR__ . '/Italic.class.php';
+require_once __DIR__ . '/BBCodeReplace.class.php';
+require_once __DIR__ . '/BBCodeDefault.class.php';
+require_once __DIR__ . '/BBCodeNoParse.class.php';
+require_once __DIR__ . '/BBCodeRoot.class.php';
 
 $str = <<<BBCODE
 [quote=Ralle]I am not very happy with the way you behave in the chat room.[/quote]
@@ -30,26 +30,41 @@ LOL;
 
 $str = '[a][/b][/a]';
 $str = '[a][i][/b][/i][/a]';
-
 $str = '[a][b][/b][k][/a][/k]';
 
-echo $str, "\r\n";
+$str = '[block]a block[/block][b]Hey [block]a block[/block][/b][noparse][b]hey[/b][/noparse]';
 
-BBParser::$debug = true;
+BBParser::$debug = false;
 
 $parser = new BBParser($str);
 $parser->parse();
-print_r($parser->tree());
 
-$dumper = new BBDumper();
-$dumper->addHandler(new Bold());
-$dumper->addHandler(new NoParse());
-$dumper->addHandler(new Italic());
-$dumper->setDefaultHandler(new NoTag());
+$bold = new BBCodeReplace('b', '<b>', '</b>', 'inline');
+$italic = new BBCodeReplace('i', '<i>', '</i>', 'inline');
+$underline = new BBCodeReplace('u', '<u>', '</u>', 'inline');
+$block = new BBCodeReplace('block', '<div>', '</div>', 'block');
+$noparse = new BBCodeNoParse();
+$notag = new BBCodeDefault();
+$bbroot = new BBCodeRoot();
 
-$d = $parser->dump($dumper);
-echo $d;
+$allTypes = array('inline', 'block');
 
+$bold->addContentType('inline');
+$italic->addContentType('inline');
+$underline->addContentType('inline');
+
+$notag->addContentType($allTypes);
+$bbroot->addContentTypes($allTypes);
+
+BBCode::addHandlers(array($bold, $italic, $underline, $noparse, $block));
+BBCode::setDefaultHandler($notag);
+BBCode::setRootHandler($bbroot);
+
+$node = $parser->tree();
+$node->parentCanContain = $allTypes;
+
+echo 'Input: ', $str, "\r\n";
+echo 'Output: ', $node->toString(), "\r\n";
 
 echo "\r\n";
 

@@ -1,18 +1,15 @@
 <?php
 
-class NoTag extends BBCode
+class BBCodeDefault extends BBCode
 {
   protected $type = '';
   protected $canContain = array();
   
   protected $tagName = '';
-  function dump(BBElement $node, BBDumper $dumper, $format = true)
+  function dump(BBNode $node)
   {
     switch (get_class($node))
     {
-      case 'BBText':
-        return $node->text;
-        
       case 'BBTag':
         if (isset($node->attributes[BBParser::SINGLE_ATTRIBUTE_NAME]))
         {
@@ -28,7 +25,11 @@ class NoTag extends BBCode
           $attr = implode('', $attr);
         }
         $ret = '[' . $node->tagName . $attr . ']';
-        $ret .= $this->dumpChildren($node, $dumper, $format);
+        foreach ($node->children as $child)
+        {
+          $ret .= $child->dump($this);
+        }
+        
         if ($node instanceof BBTag && !$node->noEndTag)
         {
           $ret .= '[/' . $node->tagName . ']';
@@ -38,10 +39,6 @@ class NoTag extends BBCode
         
       case 'BBEndTag':
         return '[/' . $node->tagName . ']';
-        break;
-      
-      case 'BBElement':
-        return $this->dumpChildren($node, $dumper, $format);
         break;
       
       default:

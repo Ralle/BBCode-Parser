@@ -22,7 +22,7 @@ class BBParser {
     $this->tokens = preg_split('#([\[\]"\/= ])#', $this->raw, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
   }
   
-  function isName($n)
+  function validName($n)
   {
     return preg_match('#^([a-z]+)$#', $n);
   }
@@ -88,7 +88,137 @@ class BBParser {
     return $this->tokens[$this->pos+$offset];
   }
   
-  function isTag()
+  function detectEndTag()
+  {
+    if ($this->ttoken() == self::CLOSE_SYMBOL)
+    {
+      $this->tpos++;
+      $this->skipSpace();
+      $tagName = $this->ttoken();
+      if ($this->validName($tagName))
+      {
+        $this->tpos++;
+        $this->skipSpace();
+        if ($this->ttoken() == self::END_BRACKET)
+        {
+          $this->tpos++;
+          $this->objects[] = new BBEndTag($tagName);
+          $this->pos = $this->tpos;
+          return true;
+        }
+        else
+        {
+          throw new NotTagException('No closing bracket for end tag');
+        }
+      }
+      else
+      {
+        throw new Exception('Tagname for end tag invalid');
+      }
+    }
+  }
+  
+  function detectSingleAttributeTag($tagName)
+  {
+    if ($this->ttoken() == self::ATTRIBUTE_DELIMETER)
+    {
+      $this->tpos++;
+      $attrValue = $this->getStr();
+      $this->skipSpace();
+      if ($this->ttoken() == self::END_BRACKET)
+      {
+        $this->tpos++;
+        $attribs = array(self::SINGLE_ATTRIBUTE_NAME => $attrValue);
+        $this->objects[] = new BBTag($tagName, $attribs);
+        $this->pos = $this->tpos;
+        return true;
+      }
+      throw new NotTagException('Missing closing bracket');
+    }
+  }
+  
+  function detectMultipleAttributeTag($tagName)
+  {
+    // we must have multiple attributes
+    $attributes = array();
+    while (1)
+    {
+      $this->d('Finding attributes');
+      $this->skipSpace();
+      if ($this->ttoken() == self::END_BRACKET)
+      {
+        $this->tpos++;
+        $this->objects[] = new BBTag($tagName, $attributes);
+        $this->pos = $this->tpos;
+        return true;
+      }
+      $this->skipSpace();
+      $attrName = $this->ttoken();
+      if ($this->validName($attrName))
+      {
+        $this->tpos++;
+        $this->skipSpace();
+        if ($this->ttoken() == self::ATTRIBUTE_DELIMETER)
+        {
+          $this->tpos++;
+          $this->skipSpace();
+          $attrValue = $this->getStr();
+          $attributes[$attrName] = $attrValue;
+        }
+        else
+        {
+          throw new NotTagException('Expecting equality token');
+        }
+      }
+      else
+      {
+        throw new NotTagException('Not valid attribute name: "' . $attrName . '"');
+      }
+    }
+  }
+  
+  function detectNoAttributeTag($tagName)
+  {
+    if ($this->ttoken() == self::END_BRACKET)
+    {
+      // tag ended here
+      $this->tpos++;
+      $this->objects[] = new BBTag($tagName);
+      $this->pos = $this->tpos;
+      return true;
+    }
+  }
+  
+  function detectBeginTag()
+  {
+    $tagName = $this->ttoken();
+    if ($this->validName($tagName))
+    {
+      $this->tpos++;
+      $this->skipSpace();
+      
+      if ($this->detectNoAttributeTag($tagName))
+      {
+        return true;
+      }
+      
+      if ($this->detectSingleAttributeTag($tagName))
+      {
+        return true;
+      }
+      
+      if ($this->detectMultipleAttributeTag($tagName))
+      {
+        return true;
+      }
+    }
+    else
+    {
+      throw new NotTagException('Invalid tagName');
+    }
+  }
+  
+  function detectTag()
   {
     $this->tpos = $this->pos;
     
@@ -96,105 +226,15 @@ class BBParser {
     {
       $this->tpos++;
       $this->skipSpace();
-      // this is a closing tag
-      if ($this->ttoken() == self::CLOSE_SYMBOL)
+      
+      if ($this->detectEndTag())
       {
-        $this->tpos++;
-        $this->skipSpace();
-        $tagName = $this->ttoken();
-        if ($this->isName($tagName))
-        {
-          $this->tpos++;
-          $this->skipSpace();
-          if ($this->ttoken() == self::END_BRACKET)
-          {
-            $this->tpos++;
-            $this->objects[] = new BBEndTag($tagName);
-            $this->pos = $this->tpos;
-            return;
-          }
-          else
-          {
-            throw new NotTagException('No closing bracket for end tag');
-          }
-        }
-        else
-        {
-          throw new Exception('Tagname for end tag invalid');
-        }
+        return true;
       }
       
-      $tagName = $this->ttoken();
-      if ($this->isName($tagName))
+      if ($this->detectBeginTag())
       {
-        // tagName is valid
-        $this->tpos++;
-        $this->skipSpace();
-        if ($this->ttoken() == self::END_BRACKET)
-        {
-          // tag ended here
-          $this->tpos++;
-          $this->objects[] = new BBTag($tagName);
-          $this->pos = $this->tpos;
-          return;
-        }
-        // we must have an attribute
-        $this->skipSpace();
-        if ($this->ttoken() == self::ATTRIBUTE_DELIMETER)
-        {
-          $this->tpos++;
-          $attrValue = $this->getStr();
-          $this->skipSpace();
-          if ($this->ttoken() == self::END_BRACKET)
-          {
-            $this->tpos++;
-            $attribs = array(self::SINGLE_ATTRIBUTE_NAME => $attrValue);
-            $this->objects[] = new BBTag($tagName, $attribs);
-            $this->pos = $this->tpos;
-            return;
-          }
-          throw new NotTagException('Missing closing bracket');
-        }
-        // we must have multiple attributes
-        $attributes = array();
-        while (1)
-        {
-          $this->d('Finding attributes');
-          $this->skipSpace();
-          if ($this->ttoken() == self::END_BRACKET)
-          {
-            $this->tpos++;
-            $this->objects[] = new BBTag($tagName, $attributes);
-            $this->pos = $this->tpos;
-            return;
-          }
-          $this->skipSpace();
-          $attrName = $this->ttoken();
-          if ($this->isName($attrName))
-          {
-            $this->tpos++;
-            $this->skipSpace();
-            if ($this->ttoken() == self::ATTRIBUTE_DELIMETER)
-            {
-              $this->tpos++;
-              $this->skipSpace();
-              $attrValue = $this->getStr();
-              $attributes[$attrName] = $attrValue;
-            }
-            else
-            {
-              throw new NotTagException('Expecting equality token');
-            }
-          }
-          else
-          {
-            throw new NotTagException('Not valid attribute name: "' . $attrName . '"');
-          }
-        }
-      }
-      else
-      {
-        throw new NotTagException('Invalid tagName');
+        return true;
       }
     }
     else
@@ -203,7 +243,7 @@ class BBParser {
     }
   }
   
-  function findTags()
+  function parseTokens()
   {
     $str = '';
     while (array_key_exists($this->pos, $this->tokens))
@@ -219,7 +259,7 @@ class BBParser {
         try
         {
           $this->d('Testing tag');
-          $this->isTag();
+          $this->detectTag();
           $this->d('Found tag');
         }
         catch (NotTagException $e)
@@ -254,7 +294,7 @@ class BBParser {
   
   function makeTree()
   {
-    $first = new BBElement();
+    $first = new BBRoot();
     $current = $first;
     foreach ($this->objects as $object)
     {
@@ -315,8 +355,8 @@ class BBParser {
           {
             // yes
             $this->d('End tag matches ancestor');
-            // go back to the ancestor again to mark all tags on the way noEndTag
             /*
+            // go back to the ancestor again to mark all tags on the way noEndTag
             while ($current !== $matchingAncestor)
             {
               $current->noEndTag = true;
@@ -340,14 +380,6 @@ class BBParser {
     $this->tree = $first;
   }
   
-  function removeParents()
-  {
-    foreach ($this->objects as $object)
-    {
-      unset($object->parent, $this->tree->parent);
-    }
-  }
-  
   function tree()
   {
     return $this->tree;
@@ -369,14 +401,11 @@ class BBParser {
     $this->d('Tokenizing');
     $this->tokenize();
     $this->d('Finding tags');
-    $this->findTags();
-    $this->tokens = array();
+    $this->parseTokens();
     $this->d('Generating tree');
     $this->makeTree();
-    $this->d('Unlinking parents');
-    $this->removeParents();
     $this->d('Done');
-    $this->objects = array();
+    unset($this->tokens, $this->objects, $this->raw);
   }
 }
 
