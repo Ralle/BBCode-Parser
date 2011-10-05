@@ -59,7 +59,11 @@ abstract class BBCode {
   {
     if ($node instanceof BBRoot)
     {
-      return self::$rootHandler;
+      if (self::$rootHandler !== null)
+      {
+        return self::$rootHandler;
+      }
+      throw new Exception('Missing root handler');
     }
     
     $tagName = $node->tagName;

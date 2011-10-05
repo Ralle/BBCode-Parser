@@ -1,5 +1,9 @@
 <?php
 
+require_once __DIR__ . '/BBCode.class.php';
+require_once __DIR__ . '/BBCodeRoot.class.php';
+require_once __DIR__ . '/BBDatatypes.php';
+
 class NotTagException extends Exception {}
 
 class BBParser {
@@ -406,19 +410,10 @@ class BBParser {
     return $this->tree;
   }
   
-  function dump(BBDumper $dumper)
-  {
-    $dumper->setTree($this->tree);
-    return $dumper->dump();
-  }
-  
-  function __construct($input)
+  function parse($input)
   {
     $this->raw = $input;
-  }
-  
-  function parse()
-  {
+    
     $this->d('Tokenizing');
     $this->tokenize();
     $this->d('Finding tags');

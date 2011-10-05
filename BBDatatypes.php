@@ -35,6 +35,8 @@ class BBRoot extends BBNode
   public function toString()
   {
     $handler = BBCode::getHandler($this);
+    // the root node relies on the handlers canContain
+    $this->parentCanContain = $handler->canContain;
     return $handler->dump($this);
   }
 }

@@ -38,8 +38,8 @@ LOL;*/
 
 BBParser::$debug = false;
 
-$parser = new BBParser($str);
-$parser->parse();
+$parser = new BBParser;
+$parser->parse($str);
 
 $bold = new BBCodeReplace('b', '<b>', '</b>', 'inline');
 $italic = new BBCodeReplace('i', '<i>', '</i>', 'inline');
@@ -57,7 +57,7 @@ $bold->addContentType('inline');
 $italic->addContentType('inline');
 $underline->addContentType('inline');
 
-$notag->addContentType($allTypes);
+$notag->addContentTypes($allTypes);
 $bbroot->addContentTypes($allTypes);
 $quote->addContentTypes($allTypes);
 
@@ -66,7 +66,7 @@ BBCode::setDefaultHandler($notag);
 BBCode::setRootHandler($bbroot);
 
 $node = $parser->tree();
-$node->parentCanContain = $allTypes;
+// $node->parentCanContain = $allTypes;
 
 echo 'Input: ', $str, "\r\n";
 echo 'Output: ', $node->toString(), "\r\n";
