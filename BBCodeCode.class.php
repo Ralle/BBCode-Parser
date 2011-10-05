@@ -10,11 +10,7 @@ class BBCodeCode extends BBCode {
     if (isset($node->attributes[BBParser::SINGLE_ATTRIBUTE_NAME]))
     {
       $mode = $node->attributes[BBParser::SINGLE_ATTRIBUTE_NAME];
-      $ret = '';
-      foreach ($node->children as $child)
-      {
-        $ret .= $child->dump($this);
-      }
+      $ret = $this->dumpChildren($node);
       return '<div>' . highlight_string($ret) . '</div>';
     }
   }

@@ -14,10 +14,7 @@ class BBCodeQuote extends BBCode {
       $ret .= '<h1>' . $node->attributes[BBParser::SINGLE_ATTRIBUTE_NAME] . '</h1>';
     }
     $ret .= '<div style="background: red">';
-    foreach ($node->children as $child)
-    {
-      $ret .= $child->dump($this);
-    }
+    $ret .= $this->dumpChildren($node);
     $ret .= '</div>';
     return $ret;
   }

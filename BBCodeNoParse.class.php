@@ -9,10 +9,7 @@ class BBCodeNoParse extends BBCode {
   {
     $ret = '<!-- noparse -->';
     
-    foreach ($node->children as $child)
-    {
-      $ret .= $child->dump($this);
-    }
+    $ret .= $this->dumpChildren($node);
     
     $ret .= '<!-- noparse end -->';
     

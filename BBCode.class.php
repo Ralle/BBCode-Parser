@@ -24,7 +24,17 @@ abstract class BBCode {
     }
   }
   
-  abstract public function dump(BBNode $element);
+  abstract public function dump(BBNode $node);
+  
+  public function dumpChildren(BBNode $node)
+  {
+    $ret = '';
+    foreach ($node->children as $child)
+    {
+      $ret .= $child->dump($this);
+    }
+    return $ret;
+  }
   
   // static stuff
   static private $handlers = array();

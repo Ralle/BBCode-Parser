@@ -257,7 +257,7 @@ class BBParser {
   
   function getPassedTokens()
   {
-    $length = $this->tpos - $this->pos + 1;
+    $length = $this->tpos - $this->pos;
     $passedTokens = array_slice($this->tokens, $this->pos, $length);
     return $passedTokens;
   }
