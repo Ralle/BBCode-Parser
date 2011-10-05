@@ -11,34 +11,22 @@ class BBCodeDefault extends BBCode
     switch (get_class($node))
     {
       case 'BBTag':
-        if (isset($node->attributes[BBParser::SINGLE_ATTRIBUTE_NAME]))
-        {
-          $attr = '="' . $node->attributes[BBParser::SINGLE_ATTRIBUTE_NAME] . '"';
-        }
-        else
-        {
-          $attr = array();
-          foreach ($node->attributes as $k => $v)
-          {
-            $attr[] = ' ' . $k . '="' . $v . '"';
-          }
-          $attr = implode('', $attr);
-        }
-        $ret = '[' . $node->tagName . $attr . ']';
+        $ret = $node->rawText;
         foreach ($node->children as $child)
         {
           $ret .= $child->dump($this);
         }
         
-        if ($node instanceof BBTag && !$node->noEndTag)
+        if (!$node->noEndTag)
         {
-          $ret .= '[/' . $node->tagName . ']';
+          assert($node->endTag instanceof BBEndTag);
+          $ret .= $node->endTag->rawText;
         }
         return $ret;
         break;
         
       case 'BBEndTag':
-        return '[/' . $node->tagName . ']';
+        return $node->rawText;
         break;
       
       default:

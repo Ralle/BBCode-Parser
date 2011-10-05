@@ -102,7 +102,9 @@ class BBParser {
         if ($this->ttoken() == self::END_BRACKET)
         {
           $this->tpos++;
-          $this->objects[] = new BBEndTag($tagName);
+          $obj = new BBEndTag($tagName);
+          $obj->rawText = $this->getPassedTokensString();
+          $this->objects[] = $obj;
           $this->pos = $this->tpos;
           return true;
         }
@@ -129,7 +131,9 @@ class BBParser {
       {
         $this->tpos++;
         $attribs = array(self::SINGLE_ATTRIBUTE_NAME => $attrValue);
-        $this->objects[] = new BBTag($tagName, $attribs);
+        $obj = new BBTag($tagName, $attribs);
+        $obj->rawText = $this->getPassedTokensString();
+        $this->objects[] = $obj;
         $this->pos = $this->tpos;
         return true;
       }
@@ -148,7 +152,9 @@ class BBParser {
       if ($this->ttoken() == self::END_BRACKET)
       {
         $this->tpos++;
-        $this->objects[] = new BBTag($tagName, $attributes);
+        $obj = new BBTag($tagName, $attributes);
+        $obj->rawText = $this->getPassedTokensString();
+        $this->objects[] = $obj;
         $this->pos = $this->tpos;
         return true;
       }
@@ -183,7 +189,9 @@ class BBParser {
     {
       // tag ended here
       $this->tpos++;
-      $this->objects[] = new BBTag($tagName);
+      $obj = new BBTag($tagName);
+      $obj->rawText = $this->getPassedTokensString();
+      $this->objects[] = $obj;
       $this->pos = $this->tpos;
       return true;
     }
@@ -243,6 +251,18 @@ class BBParser {
     }
   }
   
+  function getPassedTokens()
+  {
+    $length = $this->tpos - $this->pos + 1;
+    $passedTokens = array_slice($this->tokens, $this->pos, $length);
+    return $passedTokens;
+  }
+  
+  function getPassedTokensString()
+  {
+    return implode('', $this->getPassedTokens());
+  }
+  
   function parseTokens()
   {
     $str = '';
@@ -266,8 +286,7 @@ class BBParser {
         {
           $this->d("Tag Error: " . $e->getMessage() . "\r\n");
           $length = $this->tpos - $this->pos + 1;
-          $passedTokens = array_slice($this->tokens, $this->pos, $length);
-          $passedTokens = implode('', $passedTokens);
+          $passedTokens = $this->getPassedTokensString();
           $this->objects[] = new BBText($passedTokens);
           $this->pos = $this->tpos+1;
         }
@@ -317,6 +336,7 @@ class BBParser {
         {
           $this->d('End tag matches current tag');
           $current->noEndTag = false;
+          $current->endTag = $object;
           $current = $current->parent;
         }
         // we have found a tag that does not match the current tag
@@ -343,7 +363,7 @@ class BBParser {
             {
               break;
             }
-            if (!($child instanceof BBEndTag) && $child->tagName == $object->tagName)
+            if ($child instanceof BBTag && $child->tagName == $object->tagName)
             {
               $this->d('Previous sibling matches end tag');
               $matchingAncestor = $child;
@@ -366,6 +386,7 @@ class BBParser {
             $current->noEndTag = false;
             */
             $matchingAncestor->noEndTag = false;
+            $matchingAncestor->endTag = $object;
             $current = $current->parent;
           }
           // this is an orphan closing tag

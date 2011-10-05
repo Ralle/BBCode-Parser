@@ -10,6 +10,8 @@ require_once __DIR__ . '/BBCodeReplace.class.php';
 require_once __DIR__ . '/BBCodeDefault.class.php';
 require_once __DIR__ . '/BBCodeNoParse.class.php';
 require_once __DIR__ . '/BBCodeRoot.class.php';
+require_once __DIR__ . '/BBCodeQuote.class.php';
+require_once __DIR__ . '/BBCodeCode.class.php';
 
 $str = <<<BBCODE
 [quote=Ralle]I am not very happy with the way you behave in the chat room.[/quote]
@@ -22,17 +24,17 @@ echo '[b]Lolcaps[/b]';
 [/quote]
 BBCODE;
 
-$str = <<<LOL
+/*$str = <<<LOL
 [noparse][b]Some [i]text[/i][/b][/noparse]
 [single=att]More text[/single]
 [multiple first=some second=more]cowbobs[/multiple]
-LOL;
+LOL;*/
 
-$str = '[a][/b][/a]';
-$str = '[a][i][/b][/i][/a]';
-$str = '[a][b][/b][k][/a][/k]';
-
-$str = '[block]a block[/block][b]Hey [block]a block[/block][/b][noparse][b]hey[/b][/noparse]';
+//$str = '[a][/b][/a]';
+//$str = '[a][i][/b][/i][/a]';
+//$str = '[a][b][/b][k][/a][/k]';
+//$str = '[block]a block[/block][b]Hey [block]a block[/block][/b][noparse][b]hey[/b][/noparse]';
+//$str = '[noparse ][b]sweden[/b  ][/noparse]';
 
 BBParser::$debug = false;
 
@@ -46,6 +48,8 @@ $block = new BBCodeReplace('block', '<div>', '</div>', 'block');
 $noparse = new BBCodeNoParse();
 $notag = new BBCodeDefault();
 $bbroot = new BBCodeRoot();
+$quote = new BBCodeQuote();
+$code = new BBCodeCode();
 
 $allTypes = array('inline', 'block');
 
@@ -55,8 +59,9 @@ $underline->addContentType('inline');
 
 $notag->addContentType($allTypes);
 $bbroot->addContentTypes($allTypes);
+$quote->addContentTypes($allTypes);
 
-BBCode::addHandlers(array($bold, $italic, $underline, $noparse, $block));
+BBCode::addHandlers(array($bold, $italic, $underline, $noparse, $block, $quote, $code));
 BBCode::setDefaultHandler($notag);
 BBCode::setRootHandler($bbroot);
 

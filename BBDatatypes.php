@@ -3,7 +3,7 @@
 abstract class BBNode
 {
   public $parent = null;
-  public $children = null;
+  public $children = array();
   
   // for restricting which BBCodes can contain which
   public $parentCanContain = array();
@@ -58,6 +58,7 @@ class BBTag extends BBNode {
   public $noEndTag = true;
   public $attributes = array();
   public $rawText = '';
+  public $endTag = null;
   
   function __construct($t, array $a = array())
   {
@@ -74,6 +75,7 @@ class BBTag extends BBNode {
 
 class BBEndTag extends BBNode {
   public $tagName;
+  public $rawText = '';
   
   function __construct($t)
   {
