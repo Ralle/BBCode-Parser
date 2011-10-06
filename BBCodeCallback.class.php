@@ -16,7 +16,7 @@ class BBCodeCallback extends BBCode {
   
   function dump(BBNode $node)
   {
-    $ret = call_user_func($this->callback, $node);
+    $ret = call_user_func($this->callback, $node, $this);
     return '<div>' . $ret . '</div>';
   }
 
