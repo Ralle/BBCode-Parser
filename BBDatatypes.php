@@ -16,6 +16,7 @@ abstract class BBNode
   
   public function dump(BBCode $handler)
   {
+    // echo 'Dump: ' . get_class($this) . ' with handler: ' . get_class($handler), "\r\n";
     if ($this->parent)
     {
       $this->parentCanContain = array_intersect($handler->canContain, $this->parent->parentCanContain);
@@ -24,7 +25,7 @@ abstract class BBNode
     {
       $this->parentCanContain = $handler->canContain;
     }
-    return $this->toString();
+    return $this->toString($handler);
   }
   
   abstract public function toString();
@@ -32,9 +33,9 @@ abstract class BBNode
 
 class BBRoot extends BBNode
 {
-  public function toString()
+  public function toString(BBCode $handler = null)
   {
-    $handler = BBCode::getHandler($this);
+    $handler = BBCode::getHandler($this); // root handler
     // the root node relies on the handlers canContain
     $this->parentCanContain = $handler->canContain;
     return $handler->dump($this);
@@ -49,8 +50,21 @@ class BBText extends BBNode {
     $this->text = $t;
   }
   
-  public function toString()
+  public function toString(BBCode $handler = null)
   {
+    $text = $this->text;
+    if ($handler)
+    {
+      if ($handler->escapeText)
+      {
+        $text = htmlspecialchars($text);
+      }
+      if ($handler->replaceNewlines)
+      {
+        $text = nl2br($text);
+      }
+      return $text;
+    }
     return $this->text;
   }
 }
@@ -68,7 +82,7 @@ class BBTag extends BBNode {
     $this->attributes = $a;
   }
   
-  public function toString()
+  public function toString(BBCode $handler = null)
   {
     $handler = BBCode::getHandler($this);
     return $handler->dump($this);
@@ -84,7 +98,7 @@ class BBEndTag extends BBNode {
     $this->tagName = $t;
   }
   
-  public function toString()
+  public function toString(BBCode $handler = null)
   {
     return '[/' . $this->tagName . ']';
   }

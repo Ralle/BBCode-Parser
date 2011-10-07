@@ -2,8 +2,7 @@
 
 class BBCodeNoParse extends BBCode {
   protected $tagName = 'noparse';
-  protected $type = '';
-  protected $canContain = array();
+  protected $type = 'inline';
   
   function dump(BBNode $node)
   {

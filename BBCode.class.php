@@ -6,6 +6,7 @@ abstract class BBCode {
   protected $type = '';
   protected $canContain = array();
   protected $escapeText = true;
+  protected $replaceNewlines = true;
   
   public function __get($name)
   {
