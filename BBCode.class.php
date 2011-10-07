@@ -5,6 +5,7 @@ abstract class BBCode {
   // empty type means universal
   protected $type = '';
   protected $canContain = array();
+  protected $escapeText = true;
   
   public function __get($name)
   {

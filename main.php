@@ -48,8 +48,6 @@ $block = new BBCodeReplace('block', '<div>', '</div>', 'block');
 $noparse = new BBCodeNoParse();
 $notag = new BBCodeDefault();
 $bbroot = new BBCodeRoot();
-$quote = new BBCodeQuote();
-$code = new BBCodeCode();
 
 $allTypes = array('inline', 'block');
 
@@ -61,7 +59,7 @@ $notag->addContentTypes($allTypes);
 $bbroot->addContentTypes($allTypes);
 $quote->addContentTypes($allTypes);
 
-BBCode::addHandlers(array($bold, $italic, $underline, $noparse, $block, $quote, $code));
+BBCode::addHandlers(array($bold, $italic, $underline, $noparse, $block));
 BBCode::setDefaultHandler($notag);
 BBCode::setRootHandler($bbroot);
 

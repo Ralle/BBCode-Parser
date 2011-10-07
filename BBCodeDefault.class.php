@@ -2,10 +2,11 @@
 
 class BBCodeDefault extends BBCode
 {
+  protected $tagName = '';
   protected $type = '';
   protected $canContain = array();
+  protected $escapeText = true;
   
-  protected $tagName = '';
   function dump(BBNode $node)
   {
     switch (get_class($node))
