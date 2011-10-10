@@ -421,7 +421,9 @@ class BBParser {
     $this->d('Generating tree');
     $this->makeTree();
     $this->d('Done');
-    unset($this->tokens, $this->objects, $this->raw);
+    $this->objects = array();
+    $this->tokens = array();
+    $this->raw = '';
   }
 }
 
