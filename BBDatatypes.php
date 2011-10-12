@@ -78,7 +78,7 @@ class BBTag extends BBNode {
   
   function __construct($t, array $a = array())
   {
-    $this->tagName = $t;
+    $this->tagName = strtolower($t);
     $this->attributes = $a;
   }
   
@@ -95,7 +95,7 @@ class BBEndTag extends BBNode {
   
   function __construct($t)
   {
-    $this->tagName = $t;
+    $this->tagName = strtolower($t);
   }
   
   public function toString(BBCode $handler = null)
