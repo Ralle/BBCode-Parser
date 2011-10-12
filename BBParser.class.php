@@ -28,7 +28,7 @@ class BBParser {
   
   function validName($n)
   {
-    return preg_match('#^([a-z]+)$#', $n);
+    return preg_match('#^([a-zA-Z0-9\*]+)$#', $n);
   }
   
   private $tpos = 0;
