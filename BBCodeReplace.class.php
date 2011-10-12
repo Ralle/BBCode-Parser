@@ -4,12 +4,13 @@ class BBCodeReplace extends BBCode {
   public $start;
   public $end;
   
-  function __construct($tagName, $start, $end, $type)
+  function __construct($tagName, $start, $end, $type, array $canContain = array())
   {
     $this->tagName = $tagName;
     $this->type = $type;
     $this->start = $start;
     $this->end = $end;
+    $this->canContain = $canContain;
   }
   
   function dump(BBNode $node)

@@ -12,6 +12,9 @@ class BBParser {
   private $objects = array();
   private $tree = array();
   
+  // a list of tags that do not have an end tag
+  public static $tagsWithNoEnd = array();
+  
   public static $debug = false;
   
   const START_BRACKET = '[';
@@ -318,6 +321,7 @@ class BBParser {
   function makeTree()
   {
     $first = new BBRoot();
+    $first->noEndTag = false;
     $current = $first;
     foreach ($this->objects as $object)
     {
@@ -328,7 +332,7 @@ class BBParser {
         $current->add($object);
       }
       // we have a tag, which may have children
-      if ($object instanceof BBTag)
+      if ($object instanceof BBTag && !in_array($object->tagName, self::$tagsWithNoEnd))
       {
         $current = $object;
       }
@@ -383,16 +387,6 @@ class BBParser {
           {
             // yes
             $this->d('End tag matches ancestor');
-            /*
-            // go back to the ancestor again to mark all tags on the way noEndTag
-            while ($current !== $matchingAncestor)
-            {
-              $current->noEndTag = true;
-              $current = $current->parent;
-            }
-            // the last ancestor has a closing tag
-            $current->noEndTag = false;
-            */
             $matchingAncestor->noEndTag = false;
             $matchingAncestor->endTag = $object;
             $current = $matchingAncestor->parent;
@@ -401,6 +395,7 @@ class BBParser {
           else
           {
             $this->d('End tag is orphan');
+            $current = $current->parent;
             $current->add($object);
           }
         }
