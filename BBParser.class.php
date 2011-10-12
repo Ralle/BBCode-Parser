@@ -119,7 +119,7 @@ class BBParser {
       }
       else
       {
-        throw new Exception('Tagname for end tag invalid');
+        throw new NotTagException('Tagname for end tag invalid');
       }
     }
   }
