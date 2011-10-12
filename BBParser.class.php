@@ -292,7 +292,7 @@ class BBParser {
           $length = $this->tpos - $this->pos + 1;
           $passedTokens = $this->getPassedTokensString();
           $this->objects[] = new BBText($passedTokens);
-          $this->pos = $this->tpos+1;
+          $this->pos = $this->tpos;
         }
       }
       else
