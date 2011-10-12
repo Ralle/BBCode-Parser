@@ -1,12 +1,13 @@
 <?php
 
 abstract class BBCode {
-  protected $tagName = '';
+  public $tagName = '';
   // empty type means universal
-  protected $type = '';
-  protected $canContain = array();
-  protected $escapeText = true;
-  protected $replaceNewlines = true;
+  public $type = '';
+  public $canContain = array();
+  public $escapeText = true;
+  public $escapeAttributes = true;
+  public $replaceNewlines = true;
   
   public function __get($name)
   {

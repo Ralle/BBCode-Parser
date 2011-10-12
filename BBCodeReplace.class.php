@@ -1,8 +1,8 @@
 <?php
 
 class BBCodeReplace extends BBCode {
-  protected $start;
-  protected $end;
+  public $start;
+  public $end;
   
   function __construct($tagName, $start, $end, $type)
   {

@@ -85,6 +85,10 @@ class BBTag extends BBNode {
   public function toString(BBCode $handler = null)
   {
     $handler = BBCode::getHandler($this);
+    if ($handler->escapeAttributes)
+    {
+      $this->attributes = array_map('htmlspecialchars', $this->attributes);
+    }
     return $handler->dump($this);
   }
 }

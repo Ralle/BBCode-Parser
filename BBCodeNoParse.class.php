@@ -1,8 +1,8 @@
 <?php
 
 class BBCodeNoParse extends BBCode {
-  protected $tagName = 'noparse';
-  protected $type = 'inline';
+  public $tagName = 'noparse';
+  public $type = 'inline';
   
   function dump(BBNode $node)
   {

@@ -355,23 +355,27 @@ class BBParser {
             // we have found an ancestor for which this tag closes
             if ($tcurrent->tagName == $object->tagName)
             {
+              $this->d('Previous parent matches end tag');
               $matchingAncestor = $tcurrent;
               break;
             }
             $tcurrent = $tcurrent->parent;
           }
-          // check if not ancestor but previous sibling
-          foreach ($current->children as $child)
+          if (!$matchingAncestor)
           {
-            if ($child === $object)
+            // check if not ancestor but previous sibling
+            foreach ($current->children as $child)
             {
-              break;
-            }
-            if ($child instanceof BBTag && $child->tagName == $object->tagName)
-            {
-              $this->d('Previous sibling matches end tag');
-              $matchingAncestor = $child;
-              break;
+              if ($child === $object)
+              {
+                break;
+              }
+              if ($child instanceof BBTag && $child->tagName == $object->tagName)
+              {
+                $this->d('Previous sibling matches end tag');
+                $matchingAncestor = $child;
+                break;
+              }
             }
           }
           // ancestor found?
@@ -391,7 +395,7 @@ class BBParser {
             */
             $matchingAncestor->noEndTag = false;
             $matchingAncestor->endTag = $object;
-            $current = $current->parent;
+            $current = $matchingAncestor->parent;
           }
           // this is an orphan closing tag
           else

@@ -1,7 +1,7 @@
 <?php
 
 class BBCodeCallback extends BBCode {
-  protected $callback = null;
+  public $callback = null;
   
   function __construct($tagName, $type, array $canContain, $callback, $escapeText = true, $replaceNewlines = true)
   {
