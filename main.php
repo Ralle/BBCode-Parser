@@ -19,6 +19,11 @@ something italic</i>
 is unfiltered and does not have breaks[/unfiltered]
 BBCODE;
 
+$str = '[list]
+[*]a
+[*]b
+[/list]';
+
 /*$str = <<<LOL
 [noparse][b]Some [i]text[/i][/b][/noparse]
 [single=att]More text[/single]
@@ -36,10 +41,11 @@ function cb(BBNode $n, BBCode $c)
   return $c->dumpChildren($n);
 }
 
-BBParser::$debug = false;
+BBParser::$debug = true;
 
 $parser = new BBParser;
 $parser->parse($str);
+$parser->tagsWithNoEnd[] = '*';
 
 $allTypes = array('inline', 'block');
 
@@ -65,10 +71,12 @@ BBCode::setRootHandler($bbroot);
 
 $node = $parser->tree();
 
-echo 'Input: ', $str, "\r\n";
-echo "\r\n";
-$v = $node->toString();
-echo 'Output: ', $v, "\r\n";
+print_r($node);
+
+// echo 'Input: ', $str, "\r\n";
+// echo "\r\n";
+// $v = $node->toString();
+// echo 'Output: ', $v, "\r\n";
 
 echo "\r\n";
 

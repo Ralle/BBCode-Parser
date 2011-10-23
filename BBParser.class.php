@@ -13,7 +13,7 @@ class BBParser {
   private $tree = array();
   
   // a list of tags that do not have an end tag
-  public static $tagsWithNoEnd = array();
+  public $tagsWithNoEnd = array();
   
   public static $debug = false;
   
@@ -332,7 +332,7 @@ class BBParser {
         $current->add($object);
       }
       // we have a tag, which may have children
-      if ($object instanceof BBTag && !in_array($object->tagName, self::$tagsWithNoEnd))
+      if ($object instanceof BBTag && !in_array($object->tagName, $this->tagsWithNoEnd))
       {
         $current = $object;
       }
