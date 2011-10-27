@@ -1,9 +1,5 @@
 <?php
 
-require_once __DIR__ . '/BBCode.class.php';
-require_once __DIR__ . '/BBCodeRoot.class.php';
-require_once __DIR__ . '/BBDatatypes.php';
-
 class NotTagException extends Exception {}
 
 class BBParser {

@@ -2,9 +2,15 @@
 
 error_reporting(-1);
 
-require_once __DIR__ . '/BBDatatypes.php';
+require_once __DIR__ . '/BBNode.class.php';
+require_once __DIR__ . '/BBRoot.class.php';
+require_once __DIR__ . '/BBText.class.php';
+require_once __DIR__ . '/BBTag.class.php';
+require_once __DIR__ . '/BBEndTag.class.php';
+
 require_once __DIR__ . '/BBParser.class.php';
-// require_once __DIR__ . '/BBDumper.class.php';
+require_once __DIR__ . '/BBDumper.class.php';
+
 require_once __DIR__ . '/BBCode.class.php';
 require_once __DIR__ . '/BBCodeReplace.class.php';
 require_once __DIR__ . '/BBCodeDefault.class.php';
@@ -19,22 +25,23 @@ something italic</i>
 is unfiltered and does not have breaks[/unfiltered]
 BBCODE;
 
+$str = <<<LOL
+[noparse][b]Some [i]text[/i][/b][/noparse]
+[single=att]More text[/single]
+[multiple first=some second=more]cowbobs[/multiple]
+LOL;
+
+$str = '[a][i][/b][/i][/a]';
+$str = '[a][b][/b][k][/a][/k]';
+$str = '[block]a block[/block][b]Hey [block]a block[/block][/b][noparse][b]hey[/b][/noparse]';
+$str = '[noparse ][b]sweden[/b  ][/noparse]';
+
 $str = '[list]
 [*]a
 [*]b
 [/list]';
 
-/*$str = <<<LOL
-[noparse][b]Some [i]text[/i][/b][/noparse]
-[single=att]More text[/single]
-[multiple first=some second=more]cowbobs[/multiple]
-LOL;*/
-
-//$str = '[a][/b][/a]';
-//$str = '[a][i][/b][/i][/a]';
-//$str = '[a][b][/b][k][/a][/k]';
-//$str = '[block]a block[/block][b]Hey [block]a block[/block][/b][noparse][b]hey[/b][/noparse]';
-//$str = '[noparse ][b]sweden[/b  ][/noparse]';
+$str = '[b][/c][/b]';
 
 function cb(BBNode $n, BBCode $c)
 {
@@ -65,18 +72,17 @@ $underline->addContentType('inline');
 $notag->addContentTypes($allTypes);
 $bbroot->addContentTypes($allTypes);
 
-BBCode::addHandlers(array($bold, $italic, $underline, $noparse, $block, $callback));
-BBCode::setDefaultHandler($notag);
-BBCode::setRootHandler($bbroot);
+$dumper = new BBDumper();
+
+$dumper->addHandlers(array($bold, $italic, $underline, $noparse, $block, $callback));
+$dumper->setDefaultHandler($notag);
+$dumper->setRootHandler($bbroot);
 
 $node = $parser->tree();
 
-print_r($node);
+$dumper->assignHandlers($node);
 
-// echo 'Input: ', $str, "\r\n";
-// echo "\r\n";
-// $v = $node->toString();
-// echo 'Output: ', $v, "\r\n";
+echo $node;
 
 echo "\r\n";
 
