@@ -45,7 +45,7 @@ $str = '[b][/c][/b]';
 
 function cb(BBNode $n, BBCode $c)
 {
-  return $c->dumpChildren($n);
+  return $n->dumpChildren();
 }
 
 BBParser::$debug = true;
@@ -56,18 +56,14 @@ $parser->tagsWithNoEnd[] = '*';
 
 $allTypes = array('inline', 'block');
 
-$bold = new BBCodeReplace('b', '<b>', '</b>', 'inline');
-$italic = new BBCodeReplace('i', '<i>', '</i>', 'inline');
-$underline = new BBCodeReplace('u', '<u>', '</u>', 'inline');
-$block = new BBCodeReplace('block', '<div>', '</div>', 'block');
+$bold = new BBCodeReplace('b', '<b>', '</b>', 'inline', array('inline'));
+$italic = new BBCodeReplace('i', '<i>', '</i>', 'inline', array('inline'));
+$underline = new BBCodeReplace('u', '<u>', '</u>', 'inline', array('inline'));
+$block = new BBCodeReplace('block', '<div>', '</div>', 'block', $allTypes);
 $callback = new BBCodeCallback('unfiltered', 'inline', $allTypes, 'cb', false, false);
 $noparse = new BBCodeNoParse();
 $notag = new BBCodeDefault();
 $bbroot = new BBCodeRoot();
-
-$bold->addContentType('inline');
-$italic->addContentType('inline');
-$underline->addContentType('inline');
 
 $notag->addContentTypes($allTypes);
 $bbroot->addContentTypes($allTypes);

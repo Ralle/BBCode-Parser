@@ -336,7 +336,7 @@ class BBParser {
       if ($object instanceof BBEndTag)
       {
         // we have found the closing tag for the last opening tag
-        if ($current->tagName == $object->tagName)
+        if ($current instanceof BBTag && $current->tagName == $object->tagName)
         {
           $this->d('End tag matches current tag');
           $current->noEndTag = false;

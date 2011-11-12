@@ -26,17 +26,7 @@ abstract class BBCode {
       $this->addContentType($type);
     }
   }
-  
-  public function dumpChildren(BBNode $node)
-  {
-    $ret = '';
-    foreach ($node->children as $child)
-    {
-      $ret .= $child;
-    }
-    return $ret;
-  }
-  
+    
   abstract public function dump(BBNode $node);
 }
 

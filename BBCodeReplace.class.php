@@ -16,7 +16,7 @@ class BBCodeReplace extends BBCode {
   function dump(BBNode $node)
   {
     $ret = $this->start;
-    $ret .= $this->dumpChildren($node);
+    $ret .= $node->dumpChildren();
     $ret .= $this->end;
     return $ret;
   }

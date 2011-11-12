@@ -29,6 +29,16 @@ abstract class BBNode
   {
     return $this->handler->dump($this);
   }
+  
+  public function dumpChildren()
+  {
+    $ret = '';
+    foreach ($this->children as $child)
+    {
+      $ret .= $child;
+    }
+    return $ret;
+  }
 }
 
 ?>
