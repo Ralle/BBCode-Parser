@@ -7,7 +7,7 @@ class BBCodeDefault extends BBCode {
     {
       case 'BBTag':
         $ret = $node->rawText;
-        $ret .= $this->dumpChildren($node);
+        $ret .= $node->dumpChildren();
         
         if (!$node->noEndTag)
         {

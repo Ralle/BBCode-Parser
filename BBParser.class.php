@@ -1,9 +1,5 @@
 <?php
 
-require_once __DIR__ . '/BBCode.class.php';
-require_once __DIR__ . '/BBCodeRoot.class.php';
-require_once __DIR__ . '/BBDatatypes.php';
-
 class NotTagException extends Exception {}
 
 class BBParser {
@@ -340,7 +336,7 @@ class BBParser {
       if ($object instanceof BBEndTag)
       {
         // we have found the closing tag for the last opening tag
-        if ($current->tagName == $object->tagName)
+        if ($current instanceof BBTag && $current->tagName == $object->tagName)
         {
           $this->d('End tag matches current tag');
           $current->noEndTag = false;
