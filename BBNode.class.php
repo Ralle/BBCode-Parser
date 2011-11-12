@@ -25,9 +25,14 @@ abstract class BBNode
     }
   }
   
+  public function handler()
+  {
+    return $this->handler;
+  }
+  
   public function __toString()
   {
-    return $this->handler->dump($this);
+    return $this->handler()->dump($this);
   }
   
   public function dumpChildren()

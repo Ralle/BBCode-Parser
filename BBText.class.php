@@ -10,7 +10,7 @@ class BBText extends BBNode {
   
   public function __toString()
   {
-    $handler = $this->handler;
+    $handler = $this->handler();
     $text = $this->text;
     if ($handler->escapeText)
     {

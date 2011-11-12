@@ -27,7 +27,7 @@ abstract class BBCode {
       $this->addContentType($type);
     }
   }
-    
+  
   abstract public function dump(BBNode $node);
 }
 

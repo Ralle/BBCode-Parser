@@ -332,6 +332,10 @@ class BBParser {
       {
         $current = $object;
       }
+      if ($object instanceof BBTag && in_array($object->tagName, $this->tagsWithNoEnd))
+      {
+        $object->noEndTag = false;
+      }
       // we have an end tag
       if ($object instanceof BBEndTag)
       {

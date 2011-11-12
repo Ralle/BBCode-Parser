@@ -15,7 +15,7 @@ class BBTag extends BBNode {
   
   public function __toString()
   {
-    $handler = $this->handler;
+    $handler = $this->handler();
     if ($handler->escapeAttributes)
     {
       $this->attributes = array_map('htmlspecialchars', $this->attributes);

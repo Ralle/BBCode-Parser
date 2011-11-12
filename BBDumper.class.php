@@ -85,6 +85,11 @@ class BBDumper {
       $node->handler = $this->defaultHandler;
     }
     
+    if (! ($node->handler instanceof BBCode))
+    {
+      throw new Exception('Node did not get a handler');
+    }
+    
     foreach ($node->children as $child)
     {
       $this->assignHandlers($child);
