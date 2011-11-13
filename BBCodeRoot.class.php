@@ -3,7 +3,7 @@
 class BBCodeRoot extends BBCode {
   public function dump(BBNode $node)
   {
-    $ret = $node->dumpChildren();
+    $ret = $this->dumper->dumpChildren($node);
     return $ret;
   }
 }

@@ -41,6 +41,13 @@ $str = '[list]
 [*]b
 [/list]';
 
+$str = '[list]
+[*]
+Test
+[*]
+Test2
+[/list]';
+
 // $str = '[b][/c][/b]';
 
 function cb(BBNode $n, BBCode $c)
@@ -61,6 +68,7 @@ $italic = new BBCodeReplace('i', '<i>', '</i>', 'inline', array('inline'));
 $underline = new BBCodeReplace('u', '<u>', '</u>', 'inline', array('inline'));
 $block = new BBCodeReplace('block', '<div>', '</div>', 'block', $allTypes);
 $callback = new BBCodeCallback('unfiltered', 'inline', $allTypes, 'cb', false, false);
+$listitem = new BBCodeReplace('*', '<li>', '</li>', 'listitem', $allTypes);
 $noparse = new BBCodeNoParse();
 $notag = new BBCodeDefault();
 $bbroot = new BBCodeRoot();
@@ -81,14 +89,14 @@ function handle_list(BBNode $node, BBCode $handler)
       {
         // this means the first component of the list is not a list item
         $currentItem = new BBTag('*');
-        $currentItem->handler = 
         array_unshift($node->children, $currentItem);
+        $currentItem->parent = $node;
       }
       $node->remove($child);
       $currentItem->add($child);
     }
   }
-  return '<ul class="bblist">' . $node->dumpChildren() . '</ul>';
+  return '<ul class="bblist">' . $handler->dumper->dumpChildren($node) . '</ul>';
 }
 $list = new BBCodeCallback('list', 'block', array('listitem'), 'handle_list');
 
@@ -97,15 +105,15 @@ $bbroot->addContentTypes($allTypes);
 
 $dumper = new BBDumper();
 
-$dumper->addHandlers(array($bold, $italic, $underline, $noparse, $block, $callback, $list));
+$dumper->addHandlers(array($bold, $italic, $underline, $noparse, $block, $callback, $list, $listitem));
 $dumper->setDefaultHandler($notag);
 $dumper->setRootHandler($bbroot);
 
 $node = $parser->tree();
 
-$dumper->assignHandlers($node);
+// $dumper->assignHandlers($node);
 
-echo $node;
+echo $dumper->dump($node);
 
 echo "\r\n";
 

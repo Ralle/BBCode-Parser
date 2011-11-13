@@ -1,6 +1,8 @@
 <?php
 
 abstract class BBCode {
+  public $dumper = null;
+  
   public $tagName = '';
   // empty type means universal
   public $type = '';

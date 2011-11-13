@@ -18,7 +18,7 @@ class BBCodeCallback extends BBCode {
     $ret = call_user_func($this->callback, $node, $this);
     return $ret;
   }
-
+  
 }
 
 ?>

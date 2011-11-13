@@ -8,11 +8,6 @@ class BBEndTag extends BBNode {
   {
     $this->tagName = strtolower($t);
   }
-  
-  public function __toString()
-  {
-    return '[/' . $this->tagName . ']';
-  }
 }
 
 ?>

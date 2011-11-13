@@ -7,11 +7,8 @@ class BBCodeNoParse extends BBCode {
   function dump(BBNode $node)
   {
     $ret = '<!-- noparse -->';
-    
-    $ret .= $node->dumpChildren();
-    
+    $ret .= $this->dumper->dumpChildren($node);
     $ret .= '<!-- noparse end -->';
-    
     return $ret;
   }
 }

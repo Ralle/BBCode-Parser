@@ -12,16 +12,6 @@ class BBTag extends BBNode {
     $this->tagName = strtolower($t);
     $this->attributes = $a;
   }
-  
-  public function __toString()
-  {
-    $handler = $this->handler();
-    if ($handler->escapeAttributes)
-    {
-      $this->attributes = array_map('htmlspecialchars', $this->attributes);
-    }
-    return $handler->dump($this);
-  }
 }
 
 ?>

@@ -7,21 +7,6 @@ class BBText extends BBNode {
   {
     $this->text = $t;
   }
-  
-  public function __toString()
-  {
-    $handler = $this->handler();
-    $text = $this->text;
-    if ($handler->escapeText)
-    {
-      $text = htmlspecialchars($text);
-    }
-    if ($handler->replaceNewlines)
-    {
-      $text = nl2br($text);
-    }
-    return $text;
-  }
 }
 
 ?>
