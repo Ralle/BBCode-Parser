@@ -211,9 +211,35 @@ class BBDumper {
     return $text;
   }
   
+  public function trimInsideLeft(BBNode $node)
+  {
+    $first = reset($node->children);
+    if ($first !== false && $first instanceof BBText)
+    {
+      $first->text = ltrim($first->text);
+    }
+  }
+  
+  public function trimInsideRight(BBNode $node)
+  {
+    $last = end($node->children);
+    if ($last !== false && $last instanceof BBText)
+    {
+      $last->text = rtrim($last->text);
+    }
+  }
+  
   public function dumpChildren(BBNode $node)
   {
     $ret = '';
+    if ($node->handler->trimInsideLeft)
+    {
+      $this->trimInsideLeft($node);
+    }
+    if ($node->handler->trimInsideRight)
+    {
+      $this->trimInsideRight($node);
+    }
     foreach ($node->children as $child)
     {
       $ret .= $this->dump($child);

@@ -41,12 +41,12 @@ $str = '[list]
 [*]b
 [/list]';
 
-$str = '[list]
-[*]
-Test
-[*]
-Test2
-[/list]';
+// $str = '[list]
+// [*]
+// Test
+// [*]
+// Test2
+// [/list]';
 
 // $str = '[b][/c][/b]';
 
@@ -68,11 +68,20 @@ $italic = new BBCodeReplace('i', '<i>', '</i>', 'inline', array('inline'));
 $underline = new BBCodeReplace('u', '<u>', '</u>', 'inline', array('inline'));
 $block = new BBCodeReplace('block', '<div>', '</div>', 'block', $allTypes);
 $callback = new BBCodeCallback('unfiltered', 'inline', $allTypes, 'cb', false, false);
-$listitem = new BBCodeReplace('*', '<li>', '</li>', 'listitem', $allTypes);
 $noparse = new BBCodeNoParse();
 $notag = new BBCodeDefault();
 $bbroot = new BBCodeRoot();
 
+$listitem = new BBCodeReplace('*', '<li>', '</li>', 'listitem', $allTypes);
+$listitem->trimInsideLeft = true;
+$listitem->trimInsideRight = true;
+
+$list = new BBCodeCallback('list', 'block', array('listitem'), 'handle_list');
+$list->trimInsideLeft = true;
+$list->trimInsideRight = true;
+
+// the callback function for the list tag. This function modifies the structure of the nodes in the subtree of the tag. Each "li" list item has no children, but they should. Therefore we move all the following siblings into the last seen "li".
+// we also look at the first item and see if it is either empty after trim() or else we create a new "li" and add it to it.
 function handle_list(BBNode $node, BBCode $handler)
 {
   $currentItem = null;
@@ -83,7 +92,7 @@ function handle_list(BBNode $node, BBCode $handler)
     {
       $currentItem = $child;
     }
-    else
+    else if ($child instanceof BBText && trim($child->text))
     {
       if ($currentItem == null)
       {
@@ -98,7 +107,6 @@ function handle_list(BBNode $node, BBCode $handler)
   }
   return '<ul class="bblist">' . $handler->dumper->dumpChildren($node) . '</ul>';
 }
-$list = new BBCodeCallback('list', 'block', array('listitem'), 'handle_list');
 
 $notag->addContentTypes($allTypes);
 $bbroot->addContentTypes($allTypes);

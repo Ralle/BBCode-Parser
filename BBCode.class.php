@@ -10,7 +10,9 @@ abstract class BBCode {
   public $escapeText = true;
   public $escapeAttributes = true;
   public $replaceNewlines = true;
-  public $trimNewlines = true;
+  
+  public $trimInsideLeft = false;
+  public $trimInsideRight = false;
   
   public function __get($name)
   {
