@@ -11,7 +11,7 @@ class BBParser {
   // a list of tags that do not have an end tag
   public $tagsWithNoEnd = array();
   
-  public static $debug = false;
+  public $debug = false;
   
   const START_BRACKET = '[';
   const END_BRACKET = ']';
@@ -308,7 +308,7 @@ class BBParser {
   
   function d($m)
   {
-    if (self::$debug)
+    if ($this->debug)
     {
       echo $m, "\r\n";
     }

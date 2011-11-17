@@ -50,35 +50,45 @@ $str = '[list]
 
 // $str = '[b][/c][/b]';
 
-function cb(BBNode $n, BBCode $c)
-{
-  return $n->dumpChildren();
-}
-
-BBParser::$debug = true;
-
 $parser = new BBParser;
-$parser->tagsWithNoEnd[] = '*';
-$parser->parse($str);
+$dumper = new BBDumper;
 
-$allTypes = array('inline', 'block');
+const TYPE_INLINE = 'inline';
+const TYPE_BLOCK = 'block';
+const TYPE_LISTITEM = 'listitem';
 
-$bold = new BBCodeReplace('b', '<b>', '</b>', 'inline', array('inline'));
-$italic = new BBCodeReplace('i', '<i>', '</i>', 'inline', array('inline'));
-$underline = new BBCodeReplace('u', '<u>', '</u>', 'inline', array('inline'));
-$block = new BBCodeReplace('block', '<div>', '</div>', 'block', $allTypes);
-$callback = new BBCodeCallback('unfiltered', 'inline', $allTypes, 'cb', false, false);
-$noparse = new BBCodeNoParse();
+$normalTypes = array(TYPE_INLINE, TYPE_BLOCK);
+$inlineType = array(TYPE_INLINE);
+
+// simple replacement 
+$bold = new BBCodeReplace('b', '<b>', '</b>', TYPE_INLINE, $inlineType);
+$italic = new BBCodeReplace('i', '<i>', '</i>', TYPE_INLINE, $inlineType);
+$underline = new BBCodeReplace('u', '<u>', '</u>', TYPE_INLINE, $inlineType);
+$block = new BBCodeReplace('block', '<div>', '</div>', TYPE_BLOCK, $normalTypes);
+$noparse = new BBCodeReplace('noparse', '<!-- noparse -->', '<!-- noparse end -->', TYPE_INLINE);
+$dumper->addHandlers(array($bold, $italic, $underline, $block, $noparse));
+
+// the default handler. It handles if a tag has no handler or is not permitted in a certain context.
 $notag = new BBCodeDefault();
-$bbroot = new BBCodeRoot();
+$notag->addContentTypes($normalTypes);
+$dumper->setDefaultHandler($notag);
 
-$listitem = new BBCodeReplace('*', '<li>', '</li>', 'listitem', $allTypes);
-$listitem->trimInsideLeft = true;
-$listitem->trimInsideRight = true;
+// the root handler. It bootstraps the application by allowing all content types in the parent node.
+$root = new BBCodeRoot();
+$root->addContentTypes($normalTypes);
+$dumper->setRootHandler($root);
 
-$list = new BBCodeCallback('list', 'block', array('listitem'), 'handle_list');
+$list = new BBCodeCallback('list', TYPE_BLOCK, array(TYPE_LISTITEM), 'handle_list');
 $list->trimInsideLeft = true;
 $list->trimInsideRight = true;
+$dumper->addHandler($list);
+
+$listitem = new BBCodeReplace('*', '<li>', '</li>', TYPE_LISTITEM, $normalTypes);
+$listitem->trimInsideLeft = true;
+$listitem->trimInsideRight = true;
+$dumper->addHandler($listitem);
+// tell the parser that * tags don't have end tags.
+$parser->tagsWithNoEnd[] = '*';
 
 // the callback function for the list tag. This function modifies the structure of the nodes in the subtree of the tag. Each "li" list item has no children, but they should. Therefore we move all the following siblings into the last seen "li".
 // we also look at the first item and see if it is either empty after trim() or else we create a new "li" and add it to it.
@@ -88,11 +98,14 @@ function handle_list(BBNode $node, BBCode $handler)
   $nodeChildren = $node->children;
   foreach ($nodeChildren as $child)
   {
+    // if the child is a list item, the following children (which are not list items) should be added to the child.
     if ($child instanceof BBTag && $child->tagName == '*')
     {
       $currentItem = $child;
     }
-    else if ($child instanceof BBText && trim($child->text))
+    // else if the child is a non-empty text or not a text, it should be added to the last list item.
+    $validText = $child instanceof BBText && trim($child->text);
+    else if ($validText || !($child instanceof BBText))
     {
       if ($currentItem == null)
       {
@@ -108,18 +121,8 @@ function handle_list(BBNode $node, BBCode $handler)
   return '<ul class="bblist">' . $handler->dumper->dumpChildren($node) . '</ul>';
 }
 
-$notag->addContentTypes($allTypes);
-$bbroot->addContentTypes($allTypes);
-
-$dumper = new BBDumper();
-
-$dumper->addHandlers(array($bold, $italic, $underline, $noparse, $block, $callback, $list, $listitem));
-$dumper->setDefaultHandler($notag);
-$dumper->setRootHandler($bbroot);
-
+$parser->parse($str);
 $node = $parser->tree();
-
-// $dumper->assignHandlers($node);
 
 echo $dumper->dump($node);
 

@@ -1,7 +1,7 @@
 <?php
 
 class BBDumper {
-  public static $debug = true;
+  public $debug = false;
   
   private $handlers = array();
   private $defaultHandler = null;
@@ -249,7 +249,7 @@ class BBDumper {
   
   public function d($m)
   {
-    if (self::$debug)
+    if ($this->debug)
     {
       echo $m, "\r\n";
     }
