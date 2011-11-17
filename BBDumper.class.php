@@ -229,12 +229,38 @@ class BBDumper {
     }
   }
   
+  public function removeInitialLinebreak(BBNode $node)
+  {
+    $first = reset($node->children);
+    if ($first !== false && $first instanceof BBText)
+    {
+      $first->text = preg_replace('#^(\r\n|\r|\n)#', '', $first->text);
+    }
+  }
+  
+  public function removeLastLinebreak(BBNode $node)
+  {
+    $last = end($node->children);
+    if ($last !== false && $last instanceof BBText)
+    {
+      $last->text = preg_replace('#(\r\n|\r|\n)$#', '', $last->text);
+    }
+  }
+  
   public function dumpChildren(BBNode $node)
   {
     $ret = '';
     if ($node->handler->trimInsideLeft)
     {
       $this->trimInsideLeft($node);
+    }
+    if ($node->handler->removeInitialLinebreak)
+    {
+      $this->removeInitialLinebreak($node);
+    }
+    if ($node->handler->removeLastLinebreak)
+    {
+      $this->removeLastLinebreak($node);
     }
     if ($node->handler->trimInsideRight)
     {

@@ -14,41 +14,13 @@ require_once __DIR__ . '/BBDumper.class.php';
 require_once __DIR__ . '/BBCode.class.php';
 require_once __DIR__ . '/BBCodeReplace.class.php';
 require_once __DIR__ . '/BBCodeDefault.class.php';
-require_once __DIR__ . '/BBCodeNoParse.class.php';
 require_once __DIR__ . '/BBCodeRoot.class.php';
 require_once __DIR__ . '/BBCodeCallback.class.php';
 
-$str = <<<BBCODE
-<i>I am trying to make
-something italic</i>
-[unfiltered]everything <b>inside</b> this tag
-is unfiltered and does not have breaks[/unfiltered]
-BBCODE;
-
-$str = <<<LOL
-[noparse][b]Some [i]text[/i][/b][/noparse]
-[single=att]More text[/single]
-[multiple first=some second=more]cowbobs[/multiple]
-LOL;
-
-$str = '[a][i][/b][/i][/a]';
-$str = '[a][b][/b][k][/a][/k]';
-$str = '[block]a block[/block][b]Hey [block]a block[/block][/b][noparse][b]hey[/b][/noparse]';
-$str = '[noparse ][b]sweden[/b  ][/noparse]';
-
-$str = '[list]
-[*]a
-[*]b
+$str = '[b]Bring [i]it[/i] on![/B]
+[list]
+[*]Cow
 [/list]';
-
-// $str = '[list]
-// [*]
-// Test
-// [*]
-// Test2
-// [/list]';
-
-// $str = '[b][/c][/b]';
 
 $parser = new BBParser;
 $dumper = new BBDumper;
@@ -98,13 +70,13 @@ function handle_list(BBNode $node, BBCode $handler)
   $nodeChildren = $node->children;
   foreach ($nodeChildren as $child)
   {
+    $validText = ($child instanceof BBText && trim($child->text));
     // if the child is a list item, the following children (which are not list items) should be added to the child.
     if ($child instanceof BBTag && $child->tagName == '*')
     {
       $currentItem = $child;
     }
     // else if the child is a non-empty text or not a text, it should be added to the last list item.
-    $validText = $child instanceof BBText && trim($child->text);
     else if ($validText || !($child instanceof BBText))
     {
       if ($currentItem == null)

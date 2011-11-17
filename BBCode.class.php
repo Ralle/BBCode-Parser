@@ -11,6 +11,9 @@ abstract class BBCode {
   public $escapeAttributes = true;
   public $replaceNewlines = true;
   
+  public $removeInitialLinebreak = true;
+  public $removeLastLinebreak = true;
+  
   public $trimInsideLeft = false;
   public $trimInsideRight = false;
   
