@@ -4,17 +4,27 @@ abstract class BBCode {
   public $dumper = null;
   
   public $tagName = '';
-  // empty type means universal
+  // the content type of this handler
   public $type = '';
+  // list of content types that a given handler can contain
   public $canContain = array();
+  // escape the BBTexts inside
   public $escapeText = true;
+  // automatically escapes all attributes given to a BBCode handler
   public $escapeAttributes = true;
+  // replaces \r\n with <br /> in BBTexts
   public $replaceNewlines = true;
-  
+  // remove the first linebreak from the content of the handler
   public $removeInitialLinebreak = true;
+  // remove the last linebreak
   public $removeLastLinebreak = true;
-  
+  // remove the last linebreak before this handler
+  public $removeLinebreakBefore = true;
+  // remove the first linebreak after
+  public $removeLinebreakAfter = true;
+  // call the ltrim() function on the contents of this handler
   public $trimInsideLeft = false;
+  // call the rtrim() function
   public $trimInsideRight = false;
   
   public function __get($name)

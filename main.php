@@ -17,10 +17,11 @@ require_once __DIR__ . '/BBCodeDefault.class.php';
 require_once __DIR__ . '/BBCodeRoot.class.php';
 require_once __DIR__ . '/BBCodeCallback.class.php';
 
-$str = '[b]Bring [i]it[/i] on![/B]
+$str = 'Before list
 [list]
 [*]Cow
-[/list]';
+[/list]
+Less';
 
 $parser = new BBParser;
 $dumper = new BBDumper;

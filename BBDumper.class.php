@@ -266,8 +266,20 @@ class BBDumper {
     {
       $this->trimInsideRight($node);
     }
-    foreach ($node->children as $child)
+    for ($i = 0; $i < count($node->children); $i++)
     {
+      $child = $node->children[$i];
+      $nextSibling = array_key_exists($i+1, $node->children) ? $node->children[$i+1] : null;
+      if ($child instanceof BBText && $nextSibling instanceof BBTag && $nextSibling->removeLinebreakBefore)
+      {
+        // remove the childs last linebreak
+        $child->text = preg_replace('#(\r\n|\r|\n)$#', '', $child->text);
+      }
+      else if ($child instanceof BBTag && $nextSibling instanceof BBText && $nextSibling->removeLinebreakAfter)
+      {
+        $nextSibling->text = preg_replace('#^(\r\n|\r|\n)#', '', $nextSibling->text);
+      }
+      
       $ret .= $this->dump($child);
     }
     return $ret;
