@@ -14,14 +14,14 @@ abstract class BBCode {
   public $escapeAttributes = true;
   // replaces \r\n with <br /> in BBTexts
   public $replaceNewlines = true;
-  // remove the first linebreak from the content of the handler
-  public $removeInitialLinebreak = true;
+  // remove the first linebreak from the content of the handler    
+  public $removeInitialLinebreak = false;
   // remove the last linebreak
-  public $removeLastLinebreak = true;
+  public $removeLastLinebreak = false;
   // remove the last linebreak before this handler
-  public $removeLinebreakBefore = true;
+  public $removeLinebreakBefore = false;
   // remove the first linebreak after
-  public $removeLinebreakAfter = true;
+  public $removeLinebreakAfter = false;
   // call the ltrim() function on the contents of this handler
   public $trimInsideLeft = false;
   // call the rtrim() function
