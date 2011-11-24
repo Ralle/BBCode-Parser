@@ -7,6 +7,12 @@ abstract class BBNode
   public $handler = null;
   // a BBCode instance to handle contents
   
+  public function prepend(BBNode $child)
+  {
+    array_unshift($this->children, $child);
+    $child->parent = $this;
+  }
+  
   public function add(BBNode $child)
   {
     $this->children[] = $child;
@@ -19,7 +25,11 @@ abstract class BBNode
     {
       if ($node === $child)
       {
-        unset($this->children[$i]);
+        array_splice($this->children, $i, 1);
+        if ($child->parent === $this)
+        {
+          $child->parent = null;
+        }
         break;
       }
     }
