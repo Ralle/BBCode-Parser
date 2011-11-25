@@ -15,7 +15,7 @@ abstract class BBCode {
   // replaces \r\n with <br /> in BBTexts
   public $replaceNewlines = true;
   // remove the first linebreak from the content of the handler    
-  public $removeInitialLinebreak = false;
+  public $removeFirstLinebreak = false;
   // remove the last linebreak
   public $removeLastLinebreak = false;
   // remove the last linebreak before this handler
