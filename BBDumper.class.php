@@ -229,7 +229,7 @@ class BBDumper {
     }
   }
   
-  public function removeInitialLinebreak(BBNode $node)
+  public function removeFirstLinebreak(BBNode $node)
   {
     $first = reset($node->children);
     if ($first !== false && $first instanceof BBText)
@@ -254,9 +254,9 @@ class BBDumper {
     {
       $this->trimInsideLeft($node);
     }
-    if ($node->handler->removeInitialLinebreak)
+    if ($node->handler->removeFirstLinebreak)
     {
-      $this->removeInitialLinebreak($node);
+      $this->removeFirstLinebreak($node);
     }
     if ($node->handler->removeLastLinebreak)
     {
