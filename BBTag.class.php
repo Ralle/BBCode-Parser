@@ -2,7 +2,7 @@
 
 class BBTag extends BBNode {
   public $tagName;
-  public $noEndTag = true;
+  public $hasEndTag = false;
   public $attributes = array();
   public $rawText = '';
   public $endTag = null;

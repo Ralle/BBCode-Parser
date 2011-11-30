@@ -362,7 +362,7 @@ class BBParser {
   function makeTree()
   {
     $first = new BBRoot();
-    $first->noEndTag = false;
+    $first->hasEndTag = true;
     $current = $first;
     foreach ($this->objects as $object)
     {
@@ -379,7 +379,7 @@ class BBParser {
       }
       if ($object instanceof BBTag && in_array($object->tagName, $this->tagsWithNoEnd))
       {
-        $object->noEndTag = false;
+        $object->hasEndTag = true;
       }
       // we have an end tag
       if ($object instanceof BBEndTag)
@@ -388,7 +388,7 @@ class BBParser {
         if ($current instanceof BBTag && $current->tagName == $object->tagName)
         {
           $this->d('End tag matches current tag');
-          $current->noEndTag = false;
+          $current->hasEndTag = true;
           $current->endTag = $object;
           $current = $current->parent;
         }
@@ -433,7 +433,7 @@ class BBParser {
           {
             // yes
             $this->d('End tag matches ancestor');
-            $matchingAncestor->noEndTag = false;
+            $matchingAncestor->hasEndTag = true;
             $matchingAncestor->endTag = $object;
             $current = $matchingAncestor->parent;
           }

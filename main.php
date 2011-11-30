@@ -96,7 +96,8 @@ function handle_list(BBNode $node, BBCode $handler)
 
 $parser->debug = true;
 // $str = '[b][u][/b]';
-$str = '[b][u][/b][/u]';
+// $str = '[b][u][/b][/u]';
+$str = '[/a][b][/c][/b]';
 
 $node = $parser->parse($str);
 

@@ -9,7 +9,7 @@ class BBCodeDefault extends BBCode {
         $ret = $node->rawText;
         $ret .= $this->dumper->dumpChildren($node);
         
-        if (/*!$node->noEndTag && */$node->endTag instanceof BBEndTag)
+        if (/*$node->hasEndTag && */$node->endTag instanceof BBEndTag)
         {
           $ret .= $node->endTag->rawText;
         }
