@@ -19,10 +19,10 @@ class BBDumper {
     $this->rootHandler = $handler;
   }
   
-  public function addHandler(BBCode $handler)
+  public function addHandler(BBCode $handler, $otherName = '')
   {
     $handler->dumper = $this;
-    $tagName = $handler->tagName;
+    $tagName = $otherName ? $otherName : $handler->tagName;
     $this->handlers[$tagName] = $handler;
   }
   
