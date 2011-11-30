@@ -89,7 +89,7 @@ class BBDumper {
         
         $iHandler = $this->getImmediateHandler($node);
         // check to see if the node has a handler and if the parent permits this context type
-        if ($iHandler)
+        if ($iHandler && !$node->noEndTag)
         {
           if (in_array($iHandler->type, $parentCanContain))
           {

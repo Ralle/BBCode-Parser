@@ -441,7 +441,8 @@ class BBParser {
           else
           {
             $this->d('End tag is orphan');
-            $current = $current->parent;
+            // this causes an error where current is set to the parent of BBRoot
+            // $current = $current->parent;
             $current->add($object);
           }
         }
