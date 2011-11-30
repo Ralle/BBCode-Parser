@@ -16,7 +16,7 @@ class DefaultsTest extends PHPUnit_Framework_TestCase {
 		$result = $this->parser->parse('');
 		
 		$this->assertTrue($result instanceof BBRoot);
-		$this->assertEmpty($result->children);
+		$this->assertEmpty($result->children, 'BBRoot has children');
 	}
 	
 	/**
