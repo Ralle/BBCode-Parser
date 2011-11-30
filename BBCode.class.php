@@ -34,7 +34,7 @@ abstract class BBCode {
    
   public function addContentType($type)
   {
-    $this->canContain[] = $type;
+    $this->canContain[$type] = $type;
   }
   
   public function addContentTypes(array $types)
