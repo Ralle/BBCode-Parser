@@ -69,6 +69,7 @@ class BBDumper {
     return null;
   }
   
+  // get the absolute handler for a BBNode. Here we check whether or not the handler is allowed in the context of the node. This is the one we will be using.
   public function getHandler(BBNode $node)
   {
     if ($node->handler)
@@ -183,6 +184,7 @@ class BBDumper {
     return $text;
   }
   
+  // if the first child is a BBText, call ltrim on it.
   public function trimInsideLeft(BBNode $node)
   {
     $first = reset($node->children);
@@ -192,6 +194,7 @@ class BBDumper {
     }
   }
   
+  // if the last child is a BBText, call rtrim on it.
   public function trimInsideRight(BBNode $node)
   {
     $last = end($node->children);
@@ -201,6 +204,7 @@ class BBDumper {
     }
   }
   
+  // if the first child is a BBText, remove the first linebreak in it.
   public function removeFirstLinebreak(BBNode $node)
   {
     $first = reset($node->children);
@@ -210,6 +214,7 @@ class BBDumper {
     }
   }
   
+  // if the last child is a BBText, remove the last linebreak in it.
   public function removeLastLinebreak(BBNode $node)
   {
     $last = end($node->children);
@@ -219,6 +224,7 @@ class BBDumper {
     }
   }
   
+  // dump the children of a BBNode. Only BBTag and BBRoot can have children. All the different trim functions get called
   public function dumpChildren(BBNode $node)
   {
     $ret = '';
@@ -238,27 +244,36 @@ class BBDumper {
     {
       $this->trimInsideRight($node);
     }
+    // loop through all the children and dump them
     for ($i = 0; $i < count($node->children); $i++)
     {
       $child = $node->children[$i];
+      // get the handler
       $childHandler = $this->getHandler($child);
+      // get the next sibling
       $nextSibling = array_key_exists($i+1, $node->children) ? $node->children[$i+1] : null;
+      // get the next sibling's handler
       $nextSiblingHandler = $nextSibling !== null ? $this->getHandler($nextSibling) : null;
+      
+      // if the child is a text and the next sibling is a tag which has removeLinebreaksBefore, remove the last linebreak of the child.
       if ($child instanceof BBText && $nextSibling instanceof BBTag && $nextSiblingHandler->removeLinebreakBefore)
       {
-        // remove the childs last linebreak
+        // remove the childs last linebreak.
         $child->text = preg_replace('#(\r\n|\r|\n)$#', '', $child->text);
       }
+      // if the child is a tag and the next sibling is a text which has removeLinebreaksAfter, remove the first linebreak of the next sibling.
       else if ($child instanceof BBTag && $nextSibling instanceof BBText && $childHandler->removeLinebreakAfter)
       {
+        // remove the next siblings first linebreak.
         $nextSibling->text = preg_replace('#^(\r\n|\r|\n)#', '', $nextSibling->text);
       }
-      
+      // dump the child
       $ret .= $this->dump($child);
     }
     return $ret;
   }
   
+  // the debug function. Give it a string and it gets printed if debugging is enabled.
   public function d($m)
   {
     if ($this->debug)
