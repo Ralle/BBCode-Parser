@@ -94,8 +94,7 @@ function handle_list(BBNode $node, BBCode $handler)
   return '<ul class="bblist">' . $handler->dumper->dumpChildren($node) . '</ul>';
 }
 
-$parser->parse($str);
-$node = $parser->tree();
+$node = $parser->parse($str);
 
 echo $dumper->dump($node);
 

@@ -12,7 +12,7 @@ class BBParser {
   private $raw = '';
   private $tokens = array();
   private $objects = array();
-  private $tree = array();
+  private $tree = null;
   
   // a list of tags that do not have an end tag
   public $tagsWithNoEnd = array();
@@ -410,11 +410,6 @@ class BBParser {
     $this->tree = $first;
   }
   
-  function tree()
-  {
-    return $this->tree;
-  }
-  
   function parse($input)
   {
     $this->raw = $input;
@@ -429,6 +424,9 @@ class BBParser {
     $this->objects = array();
     $this->tokens = array();
     $this->raw = '';
+    $tree = $this->tree;
+    $this->tree = null;
+    return $tree;
   }
 }
 
