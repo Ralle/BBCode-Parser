@@ -30,10 +30,10 @@ class DefaultsTest extends PHPUnit_Framework_TestCase {
 		$str = "[b][/b]";
 		$result = $this->parser->parse($str);
 		
-		$this->assertCount(1, $result->children);
-		$this->assertTrue($result->children[0] instanceof BBTag);
-		$this->assertEquals($result->children[0]->tagName, 'b');
-		$this->assertEmpty($result->children[0]->children);
+		$this->assertCount(1, $result->children, 'BBRoot does not have 1 child');
+		$this->assertTrue($result->children[0] instanceof BBTag, 'BBRoot does not contain a BBTag');
+		$this->assertEquals($result->children[0]->tagName, 'b', 'The BBTag tagName is not b');
+		$this->assertEmpty($result->children[0]->children, 'The BBTags has children');
 	}
 	
 	/**
@@ -50,12 +50,12 @@ class DefaultsTest extends PHPUnit_Framework_TestCase {
 		$result = $this->parser->parse($str);
 		
 		$btag = $result->children[0];
-		$this->assertCount(1, $btag->children);
+		$this->assertCount(1, $btag->children, 'The BBTag not not contain 1 child');
 		
 		$textTag = $btag->children[0];
-		$this->assertTrue($textTag instanceof BBText);
-		$this->assertEquals($textTag->text, 'some text');
-		$this->assertEmpty($textTag->children);
+		$this->assertTrue($textTag instanceof BBText, 'The child of BBTag is not a BBText tag');
+		$this->assertEquals($textTag->text, 'some text', 'The text in BBText is not \'some text\'');
+		$this->assertEmpty($textTag->children, 'The BBText contains children');
 	}
 }
 
