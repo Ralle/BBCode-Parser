@@ -97,11 +97,14 @@ function handle_list(BBNode $node, BBCode $handler)
 $parser->debug = true;
 // $str = '[b][u][/b]';
 // $str = '[b][u][/b][/u]';
-$str = '[/a][b][/c][/b]';
+// $str = '[/a][b][/c][/b]';
+$str = '[a][c][b][/c][/b][/a]';
 
 $node = $parser->parse($str);
 
-echo $dumper->dump($node);
+print_r($node);
+
+// echo $dumper->dump($node);
 
 echo "\r\n";
 

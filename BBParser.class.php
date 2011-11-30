@@ -121,7 +121,7 @@ class BBParser {
     }
   }
   
-  // 
+  // returns the token for the temporary position with an optional offset.
   function ttoken($offset=0)
   {
     if ($this->isToken($offset))
@@ -131,28 +131,39 @@ class BBParser {
     $this->d('Reached end of line');
   }
   
+  // returns the token for the current position with an optional offset.
   function token($offset=0)
   {
     return $this->tokens[$this->pos+$offset];
   }
   
+  // detect an end tag. This function gets called as soon as we find a "[" symbol. Then we find a "/", a name and finally a "]".
   function detectEndTag()
   {
     if ($this->ttoken() == self::CLOSE_SYMBOL)
     {
+      // move past the "/"
       $this->tpos++;
       $this->skipSpace();
+      // get the tag name
       $tagName = $this->ttoken();
+      // detect valid tag name
       if ($this->validName($tagName))
       {
         $this->tpos++;
+        // skip spaces
         $this->skipSpace();
+        // expect end bracket
         if ($this->ttoken() == self::END_BRACKET)
         {
           $this->tpos++;
+          // instantiate BBEndTag instance
           $obj = new BBEndTag($tagName);
+          // set the raw text. We might need it if the node is not to be dumped.
           $obj->rawText = $this->getPassedTokensString();
+          // append to array of objects.
           $this->objects[] = $obj;
+          // increment position to temporary position.
           $this->pos = $this->tpos;
           return true;
         }
@@ -168,20 +179,30 @@ class BBParser {
     }
   }
   
+  // detect a tag with a single attribute. First we find the "=" symbol and then expect a string and finally the end bracket.
   function detectSingleAttributeTag($tagName)
   {
     if ($this->ttoken() == self::KEY_VALUE_DELIMETER)
     {
+      // skip past the delimeter
       $this->tpos++;
+      // get the value of the single attribute
       $attrValue = $this->getStr();
+      // allow spaces
       $this->skipSpace();
+      // expect end bracket
       if ($this->ttoken() == self::END_BRACKET)
       {
         $this->tpos++;
+        // set up attributes for BBTag object
         $attribs = array(self::SINGLE_ATTRIBUTE_NAME => $attrValue);
+        // instantiate BBTag
         $obj = new BBTag($tagName, $attribs);
+        // set raw text. We will need it if it should not be dumped.
         $obj->rawText = $this->getPassedTokensString();
+        // append the object to the list of objects.
         $this->objects[] = $obj;
+        // move position to temporary position.
         $this->pos = $this->tpos;
         return true;
       }
@@ -189,33 +210,42 @@ class BBParser {
     }
   }
   
+  // detect a tag, that has multiple attributes, for example [table columns=2 title="Statistics"]. A Tag with multiple attributes can have unlimited attributes.
   function detectMultipleAttributeTag($tagName)
   {
     // we must have multiple attributes
     $attributes = array();
+    // repeat until we won't find anymore attributes
     while (1)
     {
       $this->d('Finding attributes');
       $this->skipSpace();
+      // we have found an end bracket, there are no more attributes.
       if ($this->ttoken() == self::END_BRACKET)
       {
         $this->tpos++;
+        // instantiate BBTag and append it to array of objects.
         $obj = new BBTag($tagName, $attributes);
         $obj->rawText = $this->getPassedTokensString();
         $this->objects[] = $obj;
         $this->pos = $this->tpos;
         return true;
       }
+      // otherwise find more attributes
       $this->skipSpace();
+      // find the attribute name
       $attrName = $this->ttoken();
+      // check if the attribute name is valid
       if ($this->validName($attrName))
       {
         $this->tpos++;
         $this->skipSpace();
+        // expect the attribute value delimeter
         if ($this->ttoken() == self::KEY_VALUE_DELIMETER)
         {
           $this->tpos++;
           $this->skipSpace();
+          // get the attribute value
           $attrValue = $this->getStr();
           $attributes[$attrName] = $attrValue;
         }
