@@ -59,6 +59,16 @@ class BBParserTest extends PHPUnit_Framework_TestCase {
 		$this->assertEmpty($textTag->children, 'The BBText contains children');
 	}
 	
+	/**
+	 * Test that the following string:
+	 * [b][u][/b][/u]
+	 * parse into:
+	 * <b>[u]</b>[/u]
+	 *
+	 * Parse must return a root with a BBTag (b) that contains a
+	 * BBTag (u) that has no end tag. The root must also contain a
+	 * BBEndTag (u).
+	 */
 	public function testBadOrderedEndTagsWillBeFixed() {
 		$str = "[b][u][/b][/u]";
 		$result = $this->parser->parse($str);
