@@ -2,20 +2,20 @@
 
 error_reporting(-1);
 
-require_once __DIR__ . '/BBNode.class.php';
-require_once __DIR__ . '/BBRoot.class.php';
-require_once __DIR__ . '/BBText.class.php';
-require_once __DIR__ . '/BBTag.class.php';
-require_once __DIR__ . '/BBEndTag.class.php';
+// require_once __DIR__ . '/BBNode.class.php';
+// require_once __DIR__ . '/BBRoot.class.php';
+// require_once __DIR__ . '/BBText.class.php';
+// require_once __DIR__ . '/BBTag.class.php';
+// require_once __DIR__ . '/BBEndTag.class.php';
 
 require_once __DIR__ . '/BBParser.class.php';
 require_once __DIR__ . '/BBDumper.class.php';
 
-require_once __DIR__ . '/BBCode.class.php';
-require_once __DIR__ . '/BBCodeReplace.class.php';
-require_once __DIR__ . '/BBCodeDefault.class.php';
-require_once __DIR__ . '/BBCodeRoot.class.php';
-require_once __DIR__ . '/BBCodeCallback.class.php';
+// require_once __DIR__ . '/BBCode.class.php';
+// require_once __DIR__ . '/BBCodeReplace.class.php';
+// require_once __DIR__ . '/BBCodeDefault.class.php';
+// require_once __DIR__ . '/BBCodeRoot.class.php';
+// require_once __DIR__ . '/BBCodeCallback.class.php';
 
 $str = 'Before list
 [list]

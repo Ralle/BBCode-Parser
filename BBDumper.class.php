@@ -1,24 +1,47 @@
 <?php
 
-class BBDumper {
-  public $debug = false;
-  
-  private $handlers = array();
-  private $defaultHandler = null;
-  private $rootHandler = null;
+require_once __DIR__ . '/BBCode.class.php';
+require_once __DIR__ . '/BBCodeReplace.class.php';
+require_once __DIR__ . '/BBCodeDefault.class.php';
+require_once __DIR__ . '/BBCodeRoot.class.php';
+require_once __DIR__ . '/BBCodeCallback.class.php';
 
+/*
+  The BBDumper is a class used to output a BBNode tree as HTML or text.
+  
+  A BBNode tree consists of a series of instances of BBText and BBTag inside of a BBRoot node. In order to output any node, the dumper needs handlers. A handler is an instance of the BBCode class.
+  You will need to set the default handler for nodes that have no handler.
+  You will also need to set the root handler to boostrap the dumping.
+  The handlers each have a context type and a list of context types that are allowed inside of it. The root handler will contain the list of context types allowed in the root.
+*/
+
+class BBDumper {
+  // enable debugging to output what happens when the dumping occurs.
+  public $debug = false;
+  // contains the array of handlers with their tag name as key
+  private $handlers = array();
+  // the default handler handles BBText and unhandled BBTags
+  private $defaultHandler = null;
+  // the root handler as described above
+  private $rootHandler = null;
+  
+  // set the default handler for this dumper
   public function setDefaultHandler(BBCode $handler)
   {
+    // every handler needs a reference to their dumper
     $handler->dumper = $this;
     $this->defaultHandler = $handler;
   }
   
+  // set the root handler for this dumper
   public function setRootHandler(BBCode $handler)
   {
     $handler->dumper = $this;
     $this->rootHandler = $handler;
   }
   
+  // to add a handler to the dumper, you will use this function. Optionally you can change the tagName for which the handler will be added.
+  // this could for example be used to add both a [b] and a [bold] tag with the same handler.
   public function addHandler(BBCode $handler, $otherName = '')
   {
     $handler->dumper = $this;
@@ -26,6 +49,7 @@ class BBDumper {
     $this->handlers[$tagName] = $handler;
   }
   
+  // add multiple handlers as an array.
   public function addHandlers(array $handlers)
   {
     foreach ($handlers as $handler)
@@ -34,8 +58,10 @@ class BBDumper {
     }
   }
   
+  // get the immediate handler for a BBNode.
   public function getImmediateHandler(BBNode $node)
   {
+    // if we have a BBTag and a handler with that tag name, return it, otherwise return null.
     if ($node instanceof BBTag && isset($this->handlers[$node->tagName]))
     {
       return $this->handlers[$node->tagName];
@@ -55,12 +81,13 @@ class BBDumper {
       case 'BBRoot':
         $handler = $this->rootHandler;
         break;
+        
       case 'BBTag':
         $parentHandler = $node->parent->handler;
         $parentCanContain = $parentHandler->canContain;
         
         $iHandler = $this->getImmediateHandler($node);
-        // the node can only get the handler if it has a supported content type
+        // check to see if the node has a handler and if the parent permits this context type
         if ($iHandler)
         {
           if (in_array($iHandler->type, $parentCanContain))
@@ -69,20 +96,26 @@ class BBDumper {
           }
           else
           {
+            // else use the default handler
             $handler = $this->defaultHandler;
-            $this->d('The that is not allowed in this context.');
+            $this->d('The handler ' . $iHandler->tagName . ' is not allowed in this context.');
           }
         }
         else
         {
+          // there exists no handler to this tag, use the default one
           $this->d('There is no handler for this tag.');
           $handler = $this->defaultHandler;
         }
         break;
+        
       case 'BBText':
+        // just use the parent's handler
         $handler = $node->parent->handler;
         break;
+        
       default:
+        // this case should never be used. In any case, just use the default
         $handler = $this->defaultHandler;
         break;
     }
@@ -90,73 +123,7 @@ class BBDumper {
     return $handler;
   }
   
-  // public function getRealHandler(BBNode $node)
-  // {
-  //   $parent = $node->parent;
-  //   $parentHandler = $parent->handler;
-  //   if ($parentHandler && $parentHandler !== $this->defaultHandler)
-  //   {
-  //     return $parentHandler;
-  //   }
-  //   else
-  //   {
-  //     return $this->getRealHandler($parent);
-  //   }
-  // }
-  
-  // public function assignHandlers(BBNode $node)
-  // {
-  //   if ($this->defaultHandler === null)
-  //   {
-  //     throw new Exception('Default handler is null');
-  //   }
-  //   if ($this->rootHandler === null)
-  //   {
-  //     throw new Exception('Root handler is null');
-  //   }
-  //   if ($this->rootHandler === $this->defaultHandler)
-  //   {
-  //     throw new Exception('rootHandler cannot be same as defaultHandler');
-  //   }
-  //   
-  //   if ($node instanceof BBRoot)
-  //   {
-  //     $node->handler = $this->rootHandler;
-  //   }
-  //   else if ($node instanceof BBTag)
-  //   {
-  //     $parentCanContain = $this->getRealHandler($node)->canContain;
-  //     $likelyHandler = isset($this->handlers[$node->tagName]) ? $this->handlers[$node->tagName] : null;
-  //     if ($likelyHandler && in_array($likelyHandler->type, $parentCanContain))
-  //     {
-  //       // the node can only get the handler if it has a supported content type
-  //       $node->handler = $likelyHandler;
-  //     }
-  //     else
-  //     {
-  //       $node->handler = $this->defaultHandler;
-  //     }
-  //   }
-  //   else if ($node instanceof BBText)
-  //   {
-  //     $node->handler = $node->parent->handler;
-  //   }
-  //   else
-  //   {
-  //     $node->handler = $this->defaultHandler;
-  //   }
-  //   
-  //   if (! ($node->handler instanceof BBCode))
-  //   {
-  //     throw new Exception('Node did not get a handler');
-  //   }
-  //   
-  //   foreach ($node->children as $child)
-  //   {
-  //     $this->assignHandlers($child);
-  //   }
-  // }
-  
+  // this function is the whole purpose of the dumper. Depending on which kind of BBNode we wish to dump, we call different dump methods.
   public function dump(BBNode $node)
   {
     switch (get_class($node))
@@ -174,12 +141,14 @@ class BBDumper {
     }
   }
   
+  // dump the BBRoot
   public function dumpBBRoot(BBRoot $node)
   {
     $handler = $this->getHandler($node);
     return $handler->dump($node);
   }
   
+  // dump the BBTag and escape the attributes if requested by the handler
   public function dumpBBTag(BBTag $node)
   {
     $handler = $this->getHandler($node);
@@ -188,22 +157,25 @@ class BBDumper {
       $node->attributes = array_map('htmlspecialchars', $node->attributes);
     }
     return $handler->dump($node);
-    
   }
   
+  // dump an end tag. This will only occur if we have an orphan end tag
   public function dumpBBEndTag(BBEndTag $node)
   {
     return '[/' . $node->tagName . ']';
   }
   
+  // dump BBText and escape it if requested
   public function dumpBBText(BBText $node)
   {
     $handler = $this->getHandler($node);
     $text = $node->text;
+    // escape the text
     if ($handler->escapeText)
     {
       $text = htmlspecialchars($text);
     }
+    // make linebreaks
     if ($handler->replaceNewlines)
     {
       $text = nl2br($text);
