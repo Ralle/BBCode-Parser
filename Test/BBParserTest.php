@@ -3,17 +3,20 @@
 require_once __DIR__ . '/../BBParser.class.php';
 require_once __DIR__ . '/../BBDumper.class.php';
 
-class BBParserTest extends PHPUnit_Framework_TestCase {
+class BBParserTest extends PHPUnit_Framework_TestCase
+{
 	private $parser;
 	private $dumper;
 	
-	public function SetUp() {
+	public function SetUp()
+	{
 		$this->parser->debug = true;
 		$this->parser = new BBParser;
 		$this->dumper = new BBDumper;
 	}
 	
-	public function testParseReturnsEmptyRoot() {
+	public function testParseReturnsEmptyRoot()
+	{
 		$result = $this->parser->parse('');
 		
 		$this->assertTrue($result instanceof BBRoot);
@@ -27,7 +30,8 @@ class BBParserTest extends PHPUnit_Framework_TestCase {
 	 * Parse must return a BBRoot containing a single BBTag with
 	 * the tag name 'b' and the tag must have no children.
 	 */
-	public function testEmptyBoldTagParses(){
+	public function testEmptyBoldTagParses()
+	{
 		$str = "[b][/b]";
 		$result = $this->parser->parse($str);
 		
@@ -46,7 +50,8 @@ class BBParserTest extends PHPUnit_Framework_TestCase {
 	 *
 	 * @depends testEmptyBoldTagParses
 	 */
-	public function testBoldTagWithTextParses() {
+	public function testBoldTagWithTextParses()
+	{
 		$str = "[b]some text[/b]";
 		$result = $this->parser->parse($str);
 		
@@ -69,7 +74,8 @@ class BBParserTest extends PHPUnit_Framework_TestCase {
 	 * BBTag (u) that has no end tag. The root must also contain a
 	 * BBEndTag (u).
 	 */
-	public function testBadOrderedEndTagsWillBeFixed() {
+	public function testBadOrderedEndTagsWillBeFixed()
+	{
 		$str = "[b][u][/b][/u]";
 		$result = $this->parser->parse($str);
 		
