@@ -3,16 +3,20 @@
 require_once __DIR__ . '/../BBParser.class.php';
 require_once __DIR__ . '/../BBDumper.class.php';
 
-class DefaultsTest extends PHPUnit_Framework_TestCase {
+class BBParserTest extends PHPUnit_Framework_TestCase
+{
 	private $parser;
 	private $dumper;
 	
-	public function SetUp() {
+	public function SetUp()
+	{
+		$this->parser->debug = true;
 		$this->parser = new BBParser;
 		$this->dumper = new BBDumper;
 	}
 	
-	public function testParseReturnsEmptyRoot() {
+	public function testParseReturnsEmptyRoot()
+	{
 		$result = $this->parser->parse('');
 		
 		$this->assertTrue($result instanceof BBRoot);
@@ -26,7 +30,8 @@ class DefaultsTest extends PHPUnit_Framework_TestCase {
 	 * Parse must return a BBRoot containing a single BBTag with
 	 * the tag name 'b' and the tag must have no children.
 	 */
-	public function testEmptyBoldTagParses(){
+	public function testEmptyBoldTagParses()
+	{
 		$str = "[b][/b]";
 		$result = $this->parser->parse($str);
 		
@@ -45,7 +50,8 @@ class DefaultsTest extends PHPUnit_Framework_TestCase {
 	 *
 	 * @depends testEmptyBoldTagParses
 	 */
-	public function testBoldTagWithTextParses() {
+	public function testBoldTagWithTextParses()
+	{
 		$str = "[b]some text[/b]";
 		$result = $this->parser->parse($str);
 		
@@ -56,6 +62,35 @@ class DefaultsTest extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($textTag instanceof BBText, 'The child of BBTag is not a BBText tag');
 		$this->assertEquals($textTag->text, 'some text', 'The text in BBText is not \'some text\'');
 		$this->assertEmpty($textTag->children, 'The BBText contains children');
+	}
+	
+	/**
+	 * Test that the following string:
+	 * [b][u][/b][/u]
+	 * parse into:
+	 * <b>[u]</b>[/u]
+	 *
+	 * Parse must return a root with a BBTag (b) that contains a
+	 * BBTag (u) that has no end tag. The root must also contain a
+	 * BBEndTag (u).
+	 */
+	public function testBadOrderedEndTagsWillBeFixed()
+	{
+		$str = "[b][u][/b][/u]";
+		$result = $this->parser->parse($str);
+		
+		$this->assertCount(2, $result->children);
+		
+		$this->assertEquals(get_class($result->children[0]), 'BBTag');
+		$this->assertEquals($result->children[0]->tagName, 'b');
+		
+		$inner_u = $result->children[0]->children[0];
+		$this->assertEquals(get_class($inner_u), 'BBTag');
+		$this->assertEquals($inner_u->tagName, 'u');
+		$this->assertFalse($inner_u->hasEndTag);
+		
+		$this->assertEquals(get_class($result->children[1]), 'BBEndTag');
+		$this->assertEquals($result->children[1]->tagName, 'u');	
 	}
 }
 
