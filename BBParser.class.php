@@ -60,7 +60,6 @@ class BBParser {
       self::KEY_VALUE_DELIMETER,
       self::ATTRIBUTE_DELIMETER,
       self::STRING_SYMBOL,
-      self::SINGLE_ATTRIBUTE_NAME,
     ));
     $this->tokens = preg_split('#([' . $joinedSymbols . '])#', $this->raw, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
   }
