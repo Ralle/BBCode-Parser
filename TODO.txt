@@ -1,0 +1,4 @@
+BBParser
+- only detect BBTags that are to be handled in the BBDumper.
+- allow escaping of quote symbols in BBParser::getStr()
+- allow single quotes in BBParser::getStr()
