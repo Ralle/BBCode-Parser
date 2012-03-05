@@ -482,6 +482,9 @@ class BBParser {
   
   function parse($input)
   {
+    $this->pos = 0;
+    $this->tpos = 0;
+    
     $this->raw = $input;
     
     $this->d('Tokenizing');
