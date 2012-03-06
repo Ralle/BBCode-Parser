@@ -76,7 +76,7 @@ class BBDumper {
     {
       return $node->handler;
     }
-    $this->d('Get handler for ' . get_class($node) . ' with tag name: ' . @$node->tagName);
+    $this->d('Get handler for ' . get_class($node) . ' with tag name: ' . property_exists($node, 'tagName') ? $node->tagName : 'Non-tag');
     switch (get_class($node))
     {
       case 'BBRoot':
