@@ -395,7 +395,7 @@ class BBParser {
     $current = $first;
     foreach ($this->objects as $object)
     {
-      $this->d(($object instanceof BBEndTag ? '/' : '') . property_exists($object, 'tagName') ? $object->tagName : 'Non-tag');
+      $this->d(($object instanceof BBEndTag ? '/' : '') . ($object instanceof BBTag ? $object->tagName : 'Non-tag'));
       // add object as child to the current node
       if (!($object instanceof BBEndTag))
       {
