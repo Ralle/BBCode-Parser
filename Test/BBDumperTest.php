@@ -14,6 +14,7 @@ class BBParserTest extends PHPUnit_Framework_TestCase
 		$this->dumper = new BBDumper;
     
     $default = new BBCodeDefault;
+    $default->addContentType('inline');
     $root = new BBCodeRoot;
     $root->addContentType('inline');
     

@@ -85,7 +85,12 @@ class BBDumper {
         
       case 'BBTag':
         $parentHandler = $node->parent->handler;
-        $parentCanContain = $parentHandler->canContain;
+        // get what types the parent can contain, skip over default handler
+        $tempNode = $node->parent;
+        while ($tempNode->handler == $this->defaultHandler) {
+          $tempNode = $tempNode->parent;
+        }
+        $parentCanContain = $tempNode->handler->canContain;
         
         $iHandler = $this->getImmediateHandler($node);
         // check to see if the node has a handler and if the parent permits this context type
