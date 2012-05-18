@@ -127,6 +127,13 @@ class BBDumper {
   // this function is the whole purpose of the dumper. Depending on which kind of BBNode we wish to dump, we call different dump methods.
   public function dump(BBNode $node)
   {
+    if (!$this->defaultHandler) {
+      throw new Exception('Missing defaultHandler');
+    }
+    if (!$this->rootHandler) {
+      throw new Exception('Missing rootHandler');
+    }
+    
     switch (get_class($node))
     {
       case 'BBRoot':

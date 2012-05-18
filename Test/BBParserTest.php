@@ -10,7 +10,6 @@ class BBParserTest extends PHPUnit_Framework_TestCase
 	
 	public function SetUp()
 	{
-		$this->parser->debug = true;
 		$this->parser = new BBParser;
 		$this->dumper = new BBDumper;
 	}
